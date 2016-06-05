@@ -356,5 +356,5 @@ void CadastroProdutos () {
 	printf ("CADASTRO DE PRODUTOS: \n");
 	printf ("Nome do produto: ");
 	
-	//e isso é tudo pessoal, obrigado a todos
+	// It's working, do not touch
 }
