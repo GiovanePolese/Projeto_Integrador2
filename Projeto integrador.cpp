@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "MyInput.h"  //Biblioteca exclusiva -> Funções para ler strings e senhas
+#include "MyInput.h" //Biblioteca exclusiva -> Funções para ler strings e senhas
 
 #define TAMANHO_SENHA 9
 #define TAMANHO_USUARIO 25
@@ -163,31 +163,38 @@ void TelaCadastroLogin() {
 		if (Tipo == 1) {
 			printf ("Nome da empresa: ");
 			strcpy (nome, GetString(TAMANHO_NOME-1)); // GetString(MaxSize) == Função para ler string de tamanho previamente estipulado;
+		
+		// {	
+			while( fread(&empresa, sizeof(EMPRESA), 1, loginEmpresa)){ 
+				if(strcmp(empresa.nome, nome) == 0)
+		       		JaExiste = 1;
+			}
+			fseek(loginEmpresa, 0, SEEK_SET); // Neste caso o fseek está sendo usado apenas para posicionar o carrinho (que seria o carrinho da máquina de escrever)
+			// No início do arquivo, pois quando ele termina de ler o arquivo inteiro (sem a função fseek) o cursor fica no final, não permitindo que se leia novamente esses dados.
 			
-		while( fread(&empresa, sizeof(EMPRESA), 1, loginEmpresa)){
-			if(strcmp(empresa.nome, nome) == 0)
-           		JaExiste = 1;
-    	}
-    	fseek(loginEmpresa, 0, SEEK_SET);
+			while( fread(&fornecedor, sizeof(FORNECEDOR), 1, loginFornecedor)){
+				if(strcmp(fornecedor.nome, nome) == 0)
+		       		JaExiste = 1;
+			}
+			fseek(loginFornecedor, 0, SEEK_SET);
+   		// } Esta parte entre chaves verifica se o nome da empresa digitado já existe, tanto no arquivo empresa, quanto no arquivo fornecedor
     	
-    	while( fread(&fornecedor, sizeof(FORNECEDOR), 1, loginFornecedor)){
-			if(strcmp(fornecedor.nome, nome) == 0)
-           		JaExiste = 1;
-    	}
-    	fseek(loginFornecedor, 0, SEEK_SET);
-    	
+    	// {
 			maior = 1;
 			while( fread(&empresa, sizeof(EMPRESA), 1, loginEmpresa)){
 				if(empresa.codigo >= maior)
 	           		maior = empresa.codigo+1;
 	    	}
 	    	fseek(loginEmpresa, 0, SEEK_SET);
+		// } Esta parte entre chaves verifica qual o maior código de empresa salvo no arquivo, e o armazena, adicionando-se 1 ao valor, na variável (maior)
+		// Funcionando como um contador.
 			
 		}
 		else {
 			printf ("Nome do fornecedor: ");
 			strcpy (nome, GetString(TAMANHO_NOME-1));
-			
+		
+		// {	
 			while( fread(&empresa, sizeof(EMPRESA), 1, loginEmpresa)){
 				if(strcmp(empresa.nome, nome) == 0)
 	           		JaExiste = 1;
@@ -199,6 +206,7 @@ void TelaCadastroLogin() {
 	           		JaExiste = 1;
 	    	}
 	    	fseek(loginFornecedor, 0, SEEK_SET);
+	    // } Esta parte entre chaves verifica se o nome do fornecedor digitado já existe, tanto no arquivo empresa, quanto no arquivo fornecedor
 			
 			maior = 1;
 			while( fread(&fornecedor, sizeof(FORNECEDOR), 1, loginFornecedor)){
@@ -206,6 +214,8 @@ void TelaCadastroLogin() {
 	           		maior = fornecedor.codigo+1;
 	    	}
 	    	fseek(loginFornecedor, 0, SEEK_SET);
+	    // } Esta parte entre chaves verifica qual o maior código de fornecedor salvo no arquivo, e o armazena, adicionando-se 1 ao valor, na variável (maior)
+		// Funcionando como um contador.
 		}
 		
 		if (JaExiste == 1)
@@ -355,4 +365,5 @@ void CadastroProdutos () {
 	printf ("CADASTRO DE PRODUTOS: \n");
 	printf ("Nome do produto: ");
 	
+	// It's working, do not touch
 }
