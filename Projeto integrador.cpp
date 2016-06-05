@@ -260,9 +260,10 @@ void TelaCadastroLogin() {
 		printf ("\nConfirme sua senha: ");
 		strcpy (senha2, GetPassword(TAMANHO_SENHA-1));
 		
+	// {
 		if (Tipo == 1) {
 			empresa.codigo = maior;
-			printf ("\nCodigo da empresa: %d", empresa.codigo);
+			printf ("\nCodigo da empresa: %d", empresa.codigo); // Imprime na tela o código do produto, que foi criado com o contador (maior)
 			
 			if (strcmp (senha1, senha2) == 0) {
 				strcpy (empresa.senha, senha1);
@@ -282,7 +283,8 @@ void TelaCadastroLogin() {
 			else
 				printf ("\n\nSenhas nao correspondem. Digite novamente.\n\n");
 		}
-		
+	// } Esta parte entre chaves verifica se as senhas correspondem, se corresponderem a senha será então salva para este login específico em disco 
+	
 	} while  (strcmp (senha1, senha2) != 0);	
 	
     fclose(loginEmpresa);
@@ -364,6 +366,4 @@ void CadastroProdutos () {
 	
 	printf ("CADASTRO DE PRODUTOS: \n");
 	printf ("Nome do produto: ");
-	
-	// It's working, do not touch
 }
