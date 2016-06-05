@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 // Needs the argument MaxSize, which is the maximum size of the password
-// Returns the string password
+
 
 char *GetPassword (int MaxSize) {
 	
