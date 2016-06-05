@@ -25,17 +25,17 @@ typedef struct {
 	char senha[TAMANHO_SENHA];
 }EMPRESA;
 
-typedef struct{
-	int codigo;
-	char nomeProduto[TAMANHO_NOME];
-	int codigoEmpresa;
-}PRODUTO;
-
 typedef struct {
 	int codigo;
 	char nomeMaterial[TAMANHO_NOME];
 	char unidade[TAMANHO_UNIDADE];
 } MATERIAL;
+
+typedef struct{
+	int codigo;
+	char nomeProduto[TAMANHO_NOME];
+	int codigoEmpresa;
+}PRODUTO;
 
 typedef struct{
 	int codProduto;
