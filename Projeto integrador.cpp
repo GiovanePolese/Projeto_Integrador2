@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "MyInput.h" 
+#include "MyInput.h" //Biblioteca exclusiva -> Funções para ler strings e senhas
 
 #define TAMANHO_SENHA 9
 #define TAMANHO_USUARIO 25
@@ -356,4 +356,5 @@ void CadastroProdutos () {
 	printf ("CADASTRO DE PRODUTOS: \n");
 	printf ("Nome do produto: ");
 	
+	//e isso é tudo pessoal, obrigado a todos
 }
