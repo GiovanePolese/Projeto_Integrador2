@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "MyInput.h"  //Biblioteca exclusiva -> Funções para ler strings e senhas
+#include "MyInput.h" 
 
 #define TAMANHO_SENHA 9
 #define TAMANHO_USUARIO 25
