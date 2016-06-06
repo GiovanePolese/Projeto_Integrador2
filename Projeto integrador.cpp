@@ -375,7 +375,7 @@ void CadastroProdutos (EMPRESA empresa) {
 		strcpy(nome, GetString(TAMANHO_NOME-1));
 		maior = 1;
 		while( fread(&DadosProduto, sizeof(PRODUTO), 1, Produto)){
-			if((strcmp(DadosProduto.nomeProduto, nome) == 0) && DadosProduto.codigoEmpresa == empresa.codigo){
+			if((strcmp(DadosProduto.nomeProduto, nome) == 0)){
            		JaExiste = 1;
 			}
            	if(DadosProduto.codigo >= maior){
@@ -383,7 +383,21 @@ void CadastroProdutos (EMPRESA empresa) {
 			}
 		}
     	fseek(Produto, 0, SEEK_SET);
-    	if(JaExiste == 1 ){
+    
+		if(JaExiste==1){
+	    	while( fread(&DadosProduto, sizeof(PRODUTO), 1, Produto)){
+				if(DadosProduto.codigoEmpresa == empresa.codigo ){
+	           		JaExiste = 1;
+				}else{
+					if(strcmp(DadosProduto.nomeProduto,nome)!=0){
+						JaExiste = 0;
+					}
+					
+				}
+			}	
+		}
+		
+		if(JaExiste == 1 ){
     		printf("\nProduto ja cadastrado !\n");
     		printf("\n");
 		}else{
