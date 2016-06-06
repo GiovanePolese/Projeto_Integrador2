@@ -370,6 +370,7 @@ void CadastroProdutos (EMPRESA empresa) {
 	char nome[TAMANHO_NOME],opcao;
 	printf ("CADASTRO DE PRODUTOS: \n");
 	do{
+		JaExiste = 0;
 		printf ("Nome do produto: ");
 		strcpy(nome, GetString(TAMANHO_NOME-1));
 		maior = 1;
