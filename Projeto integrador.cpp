@@ -51,13 +51,12 @@ typedef struct{
 
 void TelaDeLogin();
 void TelaCadastroLogin();
-void MenuEmpresa();
-void MenuFornecedor();
-void CadastroProdutos ();
+void MenuEmpresa(EMPRESA empresa);
+void MenuFornecedor(FORNECEDOR fornecedor);
+void CadastroProdutos (EMPRESA empresa);
 
 int main() {
 	char opcao;
-	
 	do {
 		system ("cls");	
 		printf ("MENU PRINCIPAL:\n\n");
@@ -130,11 +129,11 @@ void TelaDeLogin() {
 	else if (strcmp (senha, SenhaCorreta) == 0) { // Senao se SenhaCorreta == senha digitada executa o menu respectivo à seu tipo
 		if (Tipo == 1) {
 			fclose(LoginEmpresa);
-			MenuEmpresa();
+			MenuEmpresa(empresa);
 		}
 		else if (Tipo = 2) {
 			fclose(LoginFornecedor);
-			MenuFornecedor();
+			MenuFornecedor(fornecedor);
 		}
 	}
 	else {                // Senao significa que a senha digitada e a SenhaCorreta não correspondem
@@ -292,7 +291,7 @@ void TelaCadastroLogin() {
     system("pause");
 }
 
-void MenuEmpresa() {
+void MenuEmpresa(EMPRESA empresa) {
 	char opcao;
 	
 	do {
@@ -308,6 +307,7 @@ void MenuEmpresa() {
 		
 		switch (opcao) {
 			case '1':
+				CadastroProdutos(empresa);
 				break;
 				
 			case '2':
@@ -329,7 +329,7 @@ void MenuEmpresa() {
 	} while (opcao != 27);
 }
 
-void MenuFornecedor() {
+void MenuFornecedor(FORNECEDOR fornecedor) {
 	char opcao;
 	
 	do {
@@ -358,12 +358,114 @@ void MenuFornecedor() {
 	} while (opcao != 27);
 }
 
-void CadastroProdutos () {
+void CadastroProdutos (EMPRESA empresa) {
+	system("cls");
 	FILE *Produto = fopen ("produtos.dat", "ab+");
+	FILE *Material = fopen("material.dat","ab+");
+	FILE *MaterialProd = fopen("materialproduto.dat","ab+");
 	PRODUTO DadosProduto;
-	
+	MATERIAL DadosMaterial;
+	MATERIALPRODUTO MatProd;
+	int JaExiste=0, maior, codmat,unidade;
+	char nome[TAMANHO_NOME],opcao;
 	printf ("CADASTRO DE PRODUTOS: \n");
-	printf ("Nome do produto: ");
+	do{
+		printf ("Nome do produto: ");
+		strcpy(nome, GetString(TAMANHO_NOME-1));
+		maior = 1;
+		while( fread(&DadosProduto, sizeof(PRODUTO), 1, Produto)){
+			if(strcmp(DadosProduto.nomeProduto, nome) == 0){
+           		JaExiste = 1;
+			}
+           	if(DadosProduto.codigo >= maior){
+           			maior = DadosProduto.codigo +1;
+			   }
+		}
+    	fseek(Produto, 0, SEEK_SET);
+    	
+    	if(JaExiste == 1 ){
+    		printf("Produto ja cadastrado !!! ");
+    		printf(" \n\n");
+		}else{
+			strcpy(DadosProduto.nomeProduto, nome);
+			DadosProduto.codigo = maior;
+			DadosProduto.codigoEmpresa = empresa.codigo;
+		}
+	}while(JaExiste==1);
 	
-	// It's working, do not touch
+	//-----------------------------------------------------//
+	
+	maior = 1;
+	JaExiste =0;
+	do{
+		printf ("Nome do material: ");
+		strcpy(nome, GetString(TAMANHO_NOME-1));
+			
+		
+		while( fread(&DadosMaterial, sizeof(MATERIAL), 1, Material)){
+			if((strcmp( DadosMaterial.nomeMaterial, nome ) ==0 )){
+           		JaExiste = 1;
+           		codmat = DadosMaterial.codigo;
+			}
+    	}
+    	fseek(Material, 0, SEEK_SET);
+		while( fread(&DadosMaterial, sizeof(MATERIAL), 1, Material)){
+				if(empresa.codigo >= maior)
+	           		maior = DadosMaterial.codigo+1;
+	    	}
+	    	
+    	fseek(Material, 0, SEEK_SET);
+    	if(JaExiste ==1){
+	    	while( fread(&MatProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)){
+				if( MatProd.codMaterial == codmat && MatProd.codProduto == DadosProduto.codigo){
+	           		JaExiste = 1;
+	           		printf("TESTANDO SE JA EXISTEE");
+				}else{
+	    			JaExiste = 0;
+				}
+			}
+		}
+    	if(JaExiste == 1 ){
+    		printf("Material ja cadastrado !!! ");
+    		printf(" \n\n");
+		}else{
+			do{
+				printf("Digite a unidade de medida : \n\n \t1 para Kg(kilograma)\t 2 para L(litro)\t 3 para Un(unidade) ");
+				scanf("%d",&unidade);
+				switch(unidade){
+					case 1:
+						strcpy(DadosMaterial.unidade,"Kg");
+					break;
+					case 2:
+						strcpy(DadosMaterial.unidade,"L");
+					break;
+					
+					case 3:
+						strcpy(DadosMaterial.unidade,"Un");
+					break;
+					default:
+						unidade=4;
+					break;
+				}
+			}while(unidade==4);
+			printf("Digite a quantidade de %s necessario(a) para este produto : ",DadosMaterial.unidade);
+			scanf("%d",&MatProd.QuantidadeMateriai);
+			
+			
+			strcpy(DadosMaterial.nomeMaterial, nome);
+			DadosMaterial.codigo = maior;
+			MatProd.codMaterial = codmat;
+			MatProd.codProduto = DadosProduto.codigo;
+			fwrite(&DadosProduto, sizeof(PRODUTO), 1, Produto);
+			fwrite(&DadosMaterial, sizeof(MATERIAL), 1, Material);
+			fwrite(&MatProd, sizeof(MATERIALPRODUTO), 1, MaterialProd);
+		}
+		
+	
+	printf("Deseja adicionar outro produto ? (S ou N)");
+		opcao = getch();
+	}while(opcao=='s'||opcao=='S');
+	fclose(Produto);
+	fclose(Material);
+	fclose(MaterialProd);
 }
