@@ -398,7 +398,7 @@ void CadastroProdutos (EMPRESA empresa) {
 	maior = 1;
 	JaExiste =0;
 	do{
-		printf ("Nome do material: ");
+		printf ("\n\nNome do material: ");
 		strcpy(nome, GetString(TAMANHO_NOME-1));
 			
 		
@@ -431,7 +431,7 @@ void CadastroProdutos (EMPRESA empresa) {
 		}else{
 			do{
 				printf("Digite a unidade de medida : \n\n \t1 para Kg(kilograma)\t 2 para L(litro)\t 3 para Un(unidade) ");
-				scanf("%d",&unidade);
+				unidade = getch();
 				switch(unidade){
 					case 1:
 						strcpy(DadosMaterial.unidade,"Kg");
