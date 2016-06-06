@@ -383,20 +383,22 @@ void CadastroProdutos (EMPRESA empresa) {
 			}
 		}
     	fseek(Produto, 0, SEEK_SET);
-    
+		
 		if(JaExiste==1){
 	    	while( fread(&DadosProduto, sizeof(PRODUTO), 1, Produto)){
-				if(DadosProduto.codigoEmpresa == empresa.codigo ){
+				if(DadosProduto.codigoEmpresa == empresa.codigo){
 	           		JaExiste = 1;
 				}else{
 					if(strcmp(DadosProduto.nomeProduto,nome)!=0){
 						JaExiste = 0;
+					}else{
+						JaExiste=1;
 					}
 					
 				}
 			}	
 		}
-		
+		 
 		if(JaExiste == 1 ){
     		printf("\nProduto ja cadastrado !\n");
     		printf("\n");
@@ -443,7 +445,7 @@ void CadastroProdutos (EMPRESA empresa) {
     		printf("\n\n");
 		}else{
 			do{
-				printf("Digite a unidade de medida : \n\n 1 para Kg(kilograma)\t 2 para L(litro)\t 3 para Un(unidade) ");
+				printf("Digite a unidade de medida : \n\n \t1 para Kg(kilograma)\t 2 para L(litro)\t 3 para Un(unidade) : ");
 				unidade = getch();
 				switch(unidade){
 					case '1':
