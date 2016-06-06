@@ -391,8 +391,6 @@ void CadastroProdutos (EMPRESA empresa) {
 				}else{
 					if(strcmp(DadosProduto.nomeProduto,nome)!=0){
 						JaExiste = 0;
-					}else{
-						JaExiste=1;
 					}
 					
 				}
