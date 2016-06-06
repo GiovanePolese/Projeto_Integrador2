@@ -375,15 +375,14 @@ void CadastroProdutos (EMPRESA empresa) {
 		strcpy(nome, GetString(TAMANHO_NOME-1));
 		maior = 1;
 		while( fread(&DadosProduto, sizeof(PRODUTO), 1, Produto)){
-			if(strcmp(DadosProduto.nomeProduto, nome) == 0){
+			if((strcmp(DadosProduto.nomeProduto, nome) == 0) && DadosProduto.codigoEmpresa == empresa.codigo){
            		JaExiste = 1;
 			}
            	if(DadosProduto.codigo >= maior){
            			maior = DadosProduto.codigo +1;
-			   }
+			}
 		}
     	fseek(Produto, 0, SEEK_SET);
-    	
     	if(JaExiste == 1 ){
     		printf("\nProduto ja cadastrado !\n");
     		printf("\n");
