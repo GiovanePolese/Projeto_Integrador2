@@ -59,8 +59,9 @@ int main() {
 	char opcao;
 	
 	do {
+		printf ("BATATA");
 		system ("cls");	
-		printf ("MENU PRINCIPAL:\n\n");
+		printf ("mENU PRINCIPAL:\n\n");
 		printf ("DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA SAIR. \n");
 		printf ("1. Fazer login.\n");
 		printf ("2. Cadastrar novo usuario.\n");
