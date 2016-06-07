@@ -22,7 +22,7 @@ char *GetPassword (int MaxSize) {
 			character = getch();
 			
 		if (j < MaxSize) {
-			if (isalnum(character) || character == 32) {
+			if (isalnum(character)) {
 					password[j] = character;
 					j++;
 					printf ("*");
