@@ -90,8 +90,8 @@ int main() {
 void TelaDeLogin() {
 	FILE *LoginEmpresa = fopen("LoginEmpresa.dat", "rb"); // Abre o arquivo "LoginEmpresa.dat" em modo de leitura de binarios
 	FILE *LoginFornecedor = fopen("LoginFornecedor.dat", "rb"); // Abre o arquivo "LoginFornecedor.dat" em modo de leitura de binarios
-	char usuario[TAMANHO_USUARIO], senha[TAMANHO_SENHA], SenhaCorreta[TAMANHO_SENHA];
-	int Usuario_SenhaIncorreta = 1, Tipo= 0;
+	char usuario[TAMANHO_USUARIO], senha[TAMANHO_SENHA], SenhaCorreta[TAMANHO_SENHA],nome[TAMANHO_NOME];
+	int Usuario_SenhaIncorreta = 1, Tipo= 0,Codigo;
 	EMPRESA empresa;
 	FORNECEDOR fornecedor;
 	
@@ -110,13 +110,18 @@ void TelaDeLogin() {
            		strcpy (SenhaCorreta, empresa.senha);
            		Tipo = 1;
            		Usuario_SenhaIncorreta = 0;
+           		Codigo = empresa.codigo;
+           		strcpy(nome, empresa.nome);
 		   }
+           		printf("(%s)",empresa.nome);
     }
     while( fread(&fornecedor, sizeof(EMPRESA), 1, LoginFornecedor)){ // Lê todo o arquivo LoginFornecedor procurando o usuario digitado
 			if(strcmp(fornecedor.usuario, usuario) == 0) {           // Descobre se ele existe ou não, e então armazena a senha deste para comparar futuramente
            		strcpy (SenhaCorreta, fornecedor.senha);
            		Tipo = 2;
            		Usuario_SenhaIncorreta = 0;
+           		Codigo = fornecedor.codigo;
+           		strcpy(nome, fornecedor.nome);
 		   }
     }
 	
@@ -129,10 +134,16 @@ void TelaDeLogin() {
 	else if (strcmp (senha, SenhaCorreta) == 0) { // Senao se SenhaCorreta == senha digitada executa o menu respectivo à seu tipo
 		if (Tipo == 1) {
 			fclose(LoginEmpresa);
+			empresa.codigo = Codigo;
+			strcpy(empresa.nome,nome);
+			printf("%s\n%s",nome,empresa.nome);
+			system("pause");
 			MenuEmpresa(empresa);
 		}
 		else if (Tipo = 2) {
 			fclose(LoginFornecedor);
+			fornecedor.codigo = Codigo;
+			strcpy(fornecedor.nome,nome);
 			MenuFornecedor(fornecedor);
 		}
 	}
@@ -296,6 +307,7 @@ void MenuEmpresa(EMPRESA empresa) {
 	
 	do {
 		system ("cls");	
+		printf("\t\t Bem vindo - %s\n\n",empresa.nome);
 		printf ("MENU EMPRESA:\n\n");
 		printf ("DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL. \n");
 		printf ("1. Cadastrar Produtos.\n");
@@ -375,7 +387,8 @@ void CadastroProdutos (EMPRESA empresa) {
 		strcpy(nome, GetString(TAMANHO_NOME-1));
 		maior = 1;
 		while( fread(&DadosProduto, sizeof(PRODUTO), 1, Produto)){
-			if((strcmp(DadosProduto.nomeProduto, nome) == 0)){
+	    		printf("Codigo da Empresa - %d / Codigo da empresa no produto  - %d",empresa.codigo,DadosProduto.codigoEmpresa);
+			if((strcmp(DadosProduto.nomeProduto, nome) == 0) && (DadosProduto.codigoEmpresa == empresa.codigo)){
            		JaExiste = 1;
 			}
            	if(DadosProduto.codigo >= maior){
@@ -384,7 +397,7 @@ void CadastroProdutos (EMPRESA empresa) {
 		}
     	fseek(Produto, 0, SEEK_SET);
 		
-		if(JaExiste==1){
+		/*if(JaExiste==1){
 	    	while( fread(&DadosProduto, sizeof(PRODUTO), 1, Produto)){
 				if(DadosProduto.codigoEmpresa == empresa.codigo){
 	           		JaExiste = 1;
@@ -394,8 +407,9 @@ void CadastroProdutos (EMPRESA empresa) {
 					}
 					
 				}
-			}	
-		}
+			}
+			
+		}*/
 		 
 		if(JaExiste == 1 ){
     		printf("\nProduto ja cadastrado !\n");
