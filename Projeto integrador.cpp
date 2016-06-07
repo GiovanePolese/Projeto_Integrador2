@@ -54,6 +54,7 @@ void TelaCadastroLogin();
 void MenuEmpresa(EMPRESA empresa);
 void MenuFornecedor(FORNECEDOR fornecedor);
 void CadastroProdutos (EMPRESA empresa);
+void CadastrarMateriaisDisponiveis ();
 
 int main() {
 	char opcao;
@@ -312,7 +313,9 @@ void MenuEmpresa(EMPRESA empresa) {
 	
 	do {
 		system ("cls");	
-		printf("\t\t Bem vindo - %s\n\n",empresa.nome);
+		system ("color 6");
+		printf("\t\t%s\n\n",empresa.nome);
+		system ("color 7");
 		printf ("MENU EMPRESA:\n\n");
 		printf ("DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL. \n");
 		printf ("1. Cadastrar Produtos.\n");
@@ -362,7 +365,8 @@ void MenuFornecedor(FORNECEDOR fornecedor) {
 			case '1':	
 				break;
 				
-			case '2':	
+			case '2':
+				CadastrarMateriaisDisponiveis ();	
 				break;
 								
 			default:
@@ -401,20 +405,6 @@ void CadastroProdutos (EMPRESA empresa) {
 			}
 		}
     	fseek(Produto, 0, SEEK_SET);
-		
-		/*if(JaExiste==1){
-	    	while( fread(&DadosProduto, sizeof(PRODUTO), 1, Produto)){
-				if(DadosProduto.codigoEmpresa == empresa.codigo){
-	           		JaExiste = 1;
-				}else{
-					if(strcmp(DadosProduto.nomeProduto,nome)!=0){
-						JaExiste = 0;
-					}
-					
-				}
-			}
-			
-		}*/
 		 
 		if(JaExiste == 1 ){
     		printf("\nProduto ja cadastrado !\n");
@@ -462,7 +452,7 @@ void CadastroProdutos (EMPRESA empresa) {
     		printf("\n\n");
 		}else{
 			do{
-				printf("Digite a unidade de medida : \n\n \t1 para Kg(kilograma)\t 2 para L(litro)\t 3 para Un(unidade) : ");
+				printf("Selecione a unidade de medida: \n 1 para Kg(kilograma)\n 2 para L(litro)\n 3 para Un(unidade) \n");
 				unidade = getch();
 				switch(unidade){
 					case '1':
@@ -476,6 +466,7 @@ void CadastroProdutos (EMPRESA empresa) {
 					case '3':
 						strcpy(DadosMaterial.unidade,"Un");
 					break;
+					
 					default:
 						unidade=4;
 					break;
@@ -495,11 +486,70 @@ void CadastroProdutos (EMPRESA empresa) {
 		}
 		
 	
-	printf("Deseja adicionar outro produto ? (S - sim ou N - nao)");
+		printf("Deseja adicionar outro produto ? (S - sim ou N - nao)");
 		opcao = getch();
-	printf ("\n");
+		printf ("\n");
 	}while(opcao=='s'||opcao=='S');
 	fclose(Produto);
 	fclose(Material);
 	fclose(MaterialProd);
+}
+
+void CadastrarMateriaisDisponiveis () {
+	system ("cls");
+	
+	FILE *Material = fopen ("MaterialDoFornecedor.dat", "ab+");
+	MATERIAL mat;
+	char nome[TAMANHO_NOME], unidade;
+	int JaExiste, maior;
+	
+	printf ("CADASTRO DE MATERIAIS: \n\n");
+	do{
+		JaExiste = 0;
+		printf ("Nome do material: ");
+		strcpy(nome, GetString(TAMANHO_NOME-1));
+		maior = 1;
+		while( fread(&mat, sizeof(MATERIAL), 1, Material)){
+
+			if(strcmp(mat.nomeMaterial, nome) == 0){
+           		JaExiste = 1;
+			}
+           	if(mat.codigo >= maior){
+           			maior = mat.codigo +1;
+			}
+		}
+    	fseek(Material, 0, SEEK_SET);
+		 
+		if(JaExiste == 1 ){
+    		printf("\nMaterial ja cadastrado !\n");
+    		printf("\n");
+		}else{
+			strcpy(mat.nomeMaterial, nome);
+			mat.codigo = maior;
+		}
+	}while(JaExiste==1);
+	
+	do{
+		printf("Selecione a unidade de medida: \n 1 para Kg(kilograma)\n 2 para L(litro)\n 3 para Un(unidade) \n");
+		unidade = getch();
+		switch(unidade){
+			case '1':
+				strcpy(mat.unidade,"Kg");
+			break;
+			
+			case '2':
+				strcpy(mat.unidade,"L");
+			break;
+			
+			case '3':
+				strcpy(mat.unidade,"Un");
+			break;
+			
+			default:
+				unidade=4;
+			break;
+		}
+	}while(unidade==4);
+	
+	fclose (Material);
 }
