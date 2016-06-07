@@ -115,7 +115,7 @@ void TelaDeLogin() {
 		   }
            		printf("(%s)",empresa.nome);
     }
-    while( fread(&fornecedor, sizeof(EMPRESA), 1, LoginFornecedor)){ // Lê todo o arquivo LoginFornecedor procurando o usuario digitado
+    while( fread(&fornecedor, sizeof(FORNECEDOR), 1, LoginFornecedor)){ // Lê todo o arquivo LoginFornecedor procurando o usuario digitado
 			if(strcmp(fornecedor.usuario, usuario) == 0) {           // Descobre se ele existe ou não, e então armazena a senha deste para comparar futuramente
            		strcpy (SenhaCorreta, fornecedor.senha);
            		Tipo = 2;
@@ -173,6 +173,7 @@ void TelaCadastroLogin() {
 		if (Tipo == 1) {
 			printf ("Nome da empresa: ");
 			strcpy (nome, GetString(TAMANHO_NOME-1)); // GetString(MaxSize) == Função para ler string de tamanho previamente estipulado;
+			strcpy(empresa.nome,nome);
 		
 		// {	
 			while( fread(&empresa, sizeof(EMPRESA), 1, loginEmpresa)){ 
@@ -198,11 +199,11 @@ void TelaCadastroLogin() {
 	    	fseek(loginEmpresa, 0, SEEK_SET);
 		// } Esta parte entre chaves verifica qual o maior código de empresa salvo no arquivo, e o armazena, adicionando-se 1 ao valor, na variável (maior)
 		// Funcionando como um contador.
-			
 		}
 		else {
 			printf ("Nome do fornecedor: ");
 			strcpy (nome, GetString(TAMANHO_NOME-1));
+			strcpy(fornecedor.nome,nome);
 		
 		// {	
 			while( fread(&empresa, sizeof(EMPRESA), 1, loginEmpresa)){
@@ -273,7 +274,8 @@ void TelaCadastroLogin() {
 		if (Tipo == 1) {
 			empresa.codigo = maior;
 			printf ("\nCodigo da empresa: %d", empresa.codigo);
-			
+			printf("\nNome da empresa: %s",empresa.nome);
+			printf("\nNome do usuario: %s",empresa.usuario);
 			if (strcmp (senha1, senha2) == 0) {
 				strcpy (empresa.senha, senha1);
 				fwrite(&empresa, sizeof(EMPRESA), 1, loginEmpresa);
