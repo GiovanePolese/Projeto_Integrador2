@@ -1,3 +1,7 @@
+//13 == ASCII code for "ENTER"
+//32 == ASCII code for "SPACE"
+//8 == ASCII code for "BACKSPACE"
+
 #include <stdio.h>
 #include <string.h>
 #include <conio.h>
@@ -49,7 +53,7 @@ char *GetString (int MaxSize) {
 			character = getch();
 			
 		if (j < MaxSize) {
-			if (isalnum(character)) {
+			if (isalnum(character) || character == 32) {
 					string[j] = character;
 					j++;
 					printf ("%c", character);
