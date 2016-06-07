@@ -1,3 +1,7 @@
+//13 == ASCII code for "ENTER"
+//32 == ASCII code for "SPACE"
+//8 == ASCII code for "BACKSPACE"
+
 #include <stdio.h>
 #include <string.h>
 #include <conio.h>
