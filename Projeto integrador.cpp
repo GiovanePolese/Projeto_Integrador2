@@ -459,7 +459,7 @@ void CadastroProdutos (EMPRESA empresa) {
     		printf("\n\n");
 		}else{
 			do{
-				printf("Digite a unidade de medida : \n\n \t1 para Kg(kilograma)\t 2 para L(litro)\t 3 para Un(unidade) : ");
+				printf("Selecione a unidade de medida : \n 1 para Kg(kilograma)\n 2 para L(litro)\n 3 para Un(unidade) \n");
 				unidade = getch();
 				switch(unidade){
 					case '1':
@@ -493,9 +493,10 @@ void CadastroProdutos (EMPRESA empresa) {
 		
 	
 	printf("Deseja adicionar outro produto ? (S - sim ou N - nao)");
-		opcao = getch();
+	opcao = getch();
 	printf ("\n");
 	}while(opcao=='s'||opcao=='S');
+	
 	fclose(Produto);
 	fclose(Material);
 	fclose(MaterialProd);
