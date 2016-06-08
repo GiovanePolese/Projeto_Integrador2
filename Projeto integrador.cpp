@@ -54,7 +54,7 @@ void TelaCadastroLogin();
 void MenuEmpresa(EMPRESA empresa);
 void MenuFornecedor(FORNECEDOR fornecedor);
 void CadastroProdutos (EMPRESA empresa);
-
+void ProdutoLista();
 int main() {
 	char opcao;
 	do {
@@ -314,6 +314,7 @@ void MenuEmpresa(EMPRESA empresa) {
 				break;
 				
 			case '3':
+			void ProdutoLista();
 				break;
 				
 			case '4':
@@ -483,4 +484,16 @@ void CadastroProdutos (EMPRESA empresa) {
 	fclose(Produto);
 	fclose(Material);
 	fclose(MaterialProd);
+	
+	
+}
+void ProdutoLista(){
+
+FILE *produtoLista = fopen("produtos.dat", "rb");
+PRODUTO ProdLista;
+fread(&ProdLista, sizeof(PRODUTO), 1, produtoLista); 
+//fread(&DadosProduto, sizeof(PRODUTO), 1, Produto)
+printf ("%d", ProdLista.codigo);
+printf ("%s", ProdLista.nomeProduto);
+printf ("%d", ProdLista.codigoEmpresa);
 }
