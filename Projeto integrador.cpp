@@ -54,7 +54,8 @@ void TelaCadastroLogin();
 void MenuEmpresa(EMPRESA empresa);
 void MenuFornecedor(FORNECEDOR fornecedor);
 void CadastroProdutos (EMPRESA empresa);
-void ProdutoLista();
+void ListarProdutos();
+
 int main() {
 	char opcao;
 	do {
@@ -90,8 +91,8 @@ int main() {
 void TelaDeLogin() {
 	FILE *LoginEmpresa = fopen("LoginEmpresa.dat", "rb"); // Abre o arquivo "LoginEmpresa.dat" em modo de leitura de binarios
 	FILE *LoginFornecedor = fopen("LoginFornecedor.dat", "rb"); // Abre o arquivo "LoginFornecedor.dat" em modo de leitura de binarios
-	char usuario[TAMANHO_USUARIO], senha[TAMANHO_SENHA], SenhaCorreta[TAMANHO_SENHA];
-	int Usuario_SenhaIncorreta = 1, Tipo= 0;
+	char usuario[TAMANHO_USUARIO], senha[TAMANHO_SENHA], SenhaCorreta[TAMANHO_SENHA],nome[TAMANHO_NOME];
+	int Usuario_SenhaIncorreta = 1, Tipo= 0,Codigo;
 	EMPRESA empresa;
 	FORNECEDOR fornecedor;
 	
@@ -110,13 +111,18 @@ void TelaDeLogin() {
            		strcpy (SenhaCorreta, empresa.senha);
            		Tipo = 1;
            		Usuario_SenhaIncorreta = 0;
+           		Codigo = empresa.codigo;
+           		strcpy(nome, empresa.nome);
 		   }
+           		printf("(%s)",empresa.nome);
     }
-    while( fread(&fornecedor, sizeof(EMPRESA), 1, LoginFornecedor)){ // Lê todo o arquivo LoginFornecedor procurando o usuario digitado
+    while( fread(&fornecedor, sizeof(FORNECEDOR), 1, LoginFornecedor)){ // Lê todo o arquivo LoginFornecedor procurando o usuario digitado
 			if(strcmp(fornecedor.usuario, usuario) == 0) {           // Descobre se ele existe ou não, e então armazena a senha deste para comparar futuramente
            		strcpy (SenhaCorreta, fornecedor.senha);
            		Tipo = 2;
            		Usuario_SenhaIncorreta = 0;
+           		Codigo = fornecedor.codigo;
+           		strcpy(nome, fornecedor.nome);
 		   }
     }
 	
@@ -129,10 +135,16 @@ void TelaDeLogin() {
 	else if (strcmp (senha, SenhaCorreta) == 0) { // Senao se SenhaCorreta == senha digitada executa o menu respectivo à seu tipo
 		if (Tipo == 1) {
 			fclose(LoginEmpresa);
+			empresa.codigo = Codigo;
+			strcpy(empresa.nome,nome);
+			printf("%s\n%s",nome,empresa.nome);
+			system("pause");
 			MenuEmpresa(empresa);
 		}
 		else if (Tipo = 2) {
 			fclose(LoginFornecedor);
+			fornecedor.codigo = Codigo;
+			strcpy(fornecedor.nome,nome);
 			MenuFornecedor(fornecedor);
 		}
 	}
@@ -162,6 +174,7 @@ void TelaCadastroLogin() {
 		if (Tipo == 1) {
 			printf ("Nome da empresa: ");
 			strcpy (nome, GetString(TAMANHO_NOME-1)); // GetString(MaxSize) == Função para ler string de tamanho previamente estipulado;
+			strcpy(empresa.nome,nome);
 		
 		// {	
 			while( fread(&empresa, sizeof(EMPRESA), 1, loginEmpresa)){ 
@@ -187,11 +200,11 @@ void TelaCadastroLogin() {
 	    	fseek(loginEmpresa, 0, SEEK_SET);
 		// } Esta parte entre chaves verifica qual o maior código de empresa salvo no arquivo, e o armazena, adicionando-se 1 ao valor, na variável (maior)
 		// Funcionando como um contador.
-			
 		}
 		else {
 			printf ("Nome do fornecedor: ");
 			strcpy (nome, GetString(TAMANHO_NOME-1));
+			strcpy(fornecedor.nome,nome);
 		
 		// {	
 			while( fread(&empresa, sizeof(EMPRESA), 1, loginEmpresa)){
@@ -262,7 +275,8 @@ void TelaCadastroLogin() {
 		if (Tipo == 1) {
 			empresa.codigo = maior;
 			printf ("\nCodigo da empresa: %d", empresa.codigo);
-			
+			printf("\nNome da empresa: %s",empresa.nome);
+			printf("\nNome do usuario: %s",empresa.usuario);
 			if (strcmp (senha1, senha2) == 0) {
 				strcpy (empresa.senha, senha1);
 				fwrite(&empresa, sizeof(EMPRESA), 1, loginEmpresa);
@@ -296,6 +310,7 @@ void MenuEmpresa(EMPRESA empresa) {
 	
 	do {
 		system ("cls");	
+		printf("\t\t Bem vindo - %s\n\n",empresa.nome);
 		printf ("MENU EMPRESA:\n\n");
 		printf ("DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL. \n");
 		printf ("1. Cadastrar Produtos.\n");
@@ -314,7 +329,7 @@ void MenuEmpresa(EMPRESA empresa) {
 				break;
 				
 			case '3':
-			void ProdutoLista();
+				ListarProdutos();
 				break;
 				
 			case '4':
@@ -376,7 +391,8 @@ void CadastroProdutos (EMPRESA empresa) {
 		strcpy(nome, GetString(TAMANHO_NOME-1));
 		maior = 1;
 		while( fread(&DadosProduto, sizeof(PRODUTO), 1, Produto)){
-			if((strcmp(DadosProduto.nomeProduto, nome) == 0)){
+	    		printf("Codigo da Empresa - %d / Codigo da empresa no produto  - %d",empresa.codigo,DadosProduto.codigoEmpresa);
+			if((strcmp(DadosProduto.nomeProduto, nome) == 0) && (DadosProduto.codigoEmpresa == empresa.codigo)){
            		JaExiste = 1;
 			}
            	if(DadosProduto.codigo >= maior){
@@ -385,7 +401,7 @@ void CadastroProdutos (EMPRESA empresa) {
 		}
     	fseek(Produto, 0, SEEK_SET);
 		
-		if(JaExiste==1){
+		/*if(JaExiste==1){
 	    	while( fread(&DadosProduto, sizeof(PRODUTO), 1, Produto)){
 				if(DadosProduto.codigoEmpresa == empresa.codigo){
 	           		JaExiste = 1;
@@ -395,8 +411,9 @@ void CadastroProdutos (EMPRESA empresa) {
 					}
 					
 				}
-			}	
-		}
+			}
+			
+		}*/
 		 
 		if(JaExiste == 1 ){
     		printf("\nProduto ja cadastrado !\n");
@@ -484,16 +501,26 @@ void CadastroProdutos (EMPRESA empresa) {
 	fclose(Produto);
 	fclose(Material);
 	fclose(MaterialProd);
-	
-	
 }
-void ProdutoLista(){
 
-FILE *produtoLista = fopen("produtos.dat", "rb");
-PRODUTO ProdLista;
-fread(&ProdLista, sizeof(PRODUTO), 1, produtoLista); 
-//fread(&DadosProduto, sizeof(PRODUTO), 1, Produto)
-printf ("%d", ProdLista.codigo);
-printf ("%s", ProdLista.nomeProduto);
-printf ("%d", ProdLista.codigoEmpresa);
+void ListarProdutos() {
+
+	system ("cls");
+
+	FILE *produtoLista = fopen("produtos.dat", "rb");
+	FILE *materialLista = fopen("material.dat", "rb");
+	FILE *materialproduto = fopen("materialproduto.dat", "rb");
+	PRODUTO ProdLista;
+	MATERIAL MatLista;
+	MATERIALPRODUTO MatProd;
+	
+	while (fread(&ProdLista, sizeof(PRODUTO), 1, produtoLista)) { 
+		printf ("Produto: %s\n", ProdLista.nomeProduto);
+		printf ("Codigo da empresa: %d\n", ProdLista.codigoEmpresa);
+		printf ("Codigo do produto: %d\n", ProdLista.codigo);
+		printf ("\n");
+	}
+	
+	printf ("\n");
+	system ("PAUSE");
 }
