@@ -54,6 +54,7 @@ void TelaCadastroLogin();
 void MenuEmpresa(EMPRESA empresa);
 void MenuFornecedor(FORNECEDOR fornecedor);
 void CadastroProdutos (EMPRESA empresa);
+void ListarProdutos();
 
 int main() {
 	char opcao;
@@ -328,6 +329,7 @@ void MenuEmpresa(EMPRESA empresa) {
 				break;
 				
 			case '3':
+				ListarProdutos();
 				break;
 				
 			case '4':
@@ -499,4 +501,26 @@ void CadastroProdutos (EMPRESA empresa) {
 	fclose(Produto);
 	fclose(Material);
 	fclose(MaterialProd);
+}
+
+void ListarProdutos() {
+
+	system ("cls");
+
+	FILE *produtoLista = fopen("produtos.dat", "rb");
+	FILE *materialLista = fopen("material.dat", "rb");
+	FILE *materialproduto = fopen("materialproduto.dat", "rb");
+	PRODUTO ProdLista;
+	MATERIAL MatLista;
+	MATERIALPRODUTO MatProd;
+	
+	while (fread(&ProdLista, sizeof(PRODUTO), 1, produtoLista)) { 
+		printf ("Produto: %s\n", ProdLista.nomeProduto);
+		printf ("Codigo da empresa: %d\n", ProdLista.codigoEmpresa);
+		printf ("Codigo do produto: %d\n", ProdLista.codigo);
+		printf ("\n");
+	}
+	
+	printf ("\n");
+	system ("PAUSE");
 }
