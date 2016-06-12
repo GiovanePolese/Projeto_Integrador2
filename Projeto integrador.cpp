@@ -55,6 +55,7 @@ void MenuEmpresa(EMPRESA empresa);
 void MenuFornecedor(FORNECEDOR fornecedor);
 void CadastroProdutos (EMPRESA empresa);
 void CadastrarMateriaisDisponiveis ();
+void Pedido(EMPRESA empresa);
 
 int main() {
 	char opcao;
@@ -136,8 +137,6 @@ void TelaDeLogin() {
 			fclose(LoginEmpresa);
 			empresa.codigo = Codigo;
 			strcpy(empresa.nome,nome);
-			printf("%s\n%s",nome,empresa.nome);
-			system("pause");
 			MenuEmpresa(empresa);
 		}
 		else if (Tipo = 2) {
@@ -328,16 +327,19 @@ void MenuEmpresa(EMPRESA empresa) {
 		switch (opcao) {
 			case '1':
 				CadastroProdutos(empresa);
-				break;
+			break;
 				
 			case '2':
-				break;
-				
+				Pedido(empresa);
+			break;
+			
 			case '3':
-				break;
+		
+			break;
 				
 			case '4':
-				break;
+		
+			break;
 								
 			default:
 				if (opcao != 27) {
@@ -553,3 +555,45 @@ void CadastrarMateriaisDisponiveis () {
 	
 	fclose (Material);
 }
+void Pedido(EMPRESA empresa){
+	//ler o produto
+	//Ler a Quantidade
+	system("cls");
+	FILE *Pedido = fopen("pedido.dat","ab+");
+	FILE *Produto = fopen("produto.dat","ab+");
+	PEDIDO pedido;
+	PRODUTO prod;
+	char produto[TAMANHO_NOME];
+	int quantidade,existe=0,opcao;
+	printf("Digite o produto desejado : ");
+	strcpy(produto,GetString(TAMANHO_NOME-1));
+	printf("\n%s\n",produto);
+	while (fread(&prod, sizeof(PRODUTO), 1, Produto)) { 
+	printf("\n%s - %s\n",produto,prod.nomeProduto);
+		if(strcmp(prod.nomeProduto,produto)==0){
+			printf("\tCodigo: %d",prod.codigo);
+			printf("\tNome: %s",prod.nomeProduto);
+			existe=1;
+		}
+	}
+	fseek(Produto, 0, SEEK_SET);
+	if(existe==0){
+		printf("Produto %s nao cadastrado. FILHA DAPUTA \n",produto);
+	}else{
+		printf("Este produto que deseja solicitar ? (S - Sim / N - Nao)");
+		opcao = getch();
+		do{
+			if(opcao=='s' || opcao=='S'){
+				// TODAS AS OPERAÇÕES			
+			
+			/*}else{
+				MenuEmpresa(empresa);
+			*/
+			}
+		}while(opcao!='S' && opcao !='s' && opcao !='N' && opcao !='n');
+	}
+	
+	
+	system("pause");
+}
+
