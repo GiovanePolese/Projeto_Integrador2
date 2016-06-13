@@ -499,6 +499,7 @@ void CadastroProdutos (EMPRESA empresa) {
 }
 
 void ListarProdutos(EMPRESA empresa) {
+	//Ta errado a partir da linha 524. ARRUMA ESSA PORRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 
 	system("cls");
 	FILE *Pedido = fopen("pedido.dat","ab");
 	FILE *Produto = fopen("produtos.dat","rb");
@@ -509,32 +510,37 @@ void ListarProdutos(EMPRESA empresa) {
 	PRODUTO prod;
 	MATERIAL mat;
 	MATERIALPRODUTO matProd;
+	char nada[2]={' ',' '};
 	int existe = 0;
-	
 	while (fread(&prod, sizeof(PRODUTO), 1, Produto)) { 
-		if (prod.codigoEmpresa == empresa.codigo) {
+		if (empresa.codigo == prod.codigoEmpresa) {
+			printf("%d - %s - %d",empresa.codigo,empresa.nome,prod.codigoEmpresa);
 			if (existe != 1) {
-				printf("\tCodigo: %d",prod.codigo);
-				printf("\tNome: %s",prod.nomeProduto);
-				printf ("\tMateriais: ");
+				printf("\n\tCodigo: %d",prod.codigo);
+				printf("\n\tNome: %s",prod.nomeProduto);
+				printf ("\n\tMateriais: ");
 			}
-			while (fread(&matProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)) {
-				printf ("\nCodigo do produto - %d; Material Produto - %d", prod.codigo, matProd.codProduto);
-				if (matProd.codProduto == prod.codigo) {
-					//printf ("\nEntrou no 1\n");
-					while (fread(&mat, sizeof(MATERIAL), 1, Material)){
-						if (matProd.codMaterial == mat.codigo) {
-							//printf ("Entrou no 2 ");
-							printf ("\n\t%d%s de %s", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
-						}
-					}
+			//else{
+				while (fread(&matProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)) {
+						if (matProd.codProduto == prod.codigo) {
+							printf ("\nCodigo do produto - %d; Material Produto - %d", prod.codigo, matProd.codProduto);
+							while (fread(&mat, sizeof(MATERIAL), 1, Material)){
+								if(mat.codigo!=0){
+									printf("\nCodigo do material - %d\n",mat.codigo);
+									if (matProd.codMaterial == mat.codigo) {
+										//printf ("Entrou no 2 ");
+										printf ("\n\t%d%s de %s", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
+									}
+								}
+							}	
+						fseek(Material, 0, SEEK_SET);
+					}	
 				}
-			}
-			existe = 1;
+				fseek(MaterialProd, 0, SEEK_SET);
+				existe = 1;
+			//}
 		}
 	}
-	fseek(Material, 0, SEEK_SET);
-	fseek(MaterialProd, 0, SEEK_SET);
 	fseek(Produto, 0, SEEK_SET);
 	getch();
 	fclose (Pedido);
