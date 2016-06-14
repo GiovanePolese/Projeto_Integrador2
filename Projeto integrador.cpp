@@ -313,9 +313,7 @@ void MenuEmpresa(EMPRESA empresa) {
 	
 	do {
 		system ("cls");	
-		system ("color 6");
 		printf("\t\t%s\n\n",empresa.nome);
-		system ("color 7");
 		printf ("MENU EMPRESA:\n\n");
 		printf ("DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL. \n");
 		printf ("1. Cadastrar Produtos.\n");
@@ -402,10 +400,8 @@ void CadastroProdutos (EMPRESA empresa) {
 
 			if((stricmp(DadosProduto.nomeProduto, nome) == 0) && (DadosProduto.codigoEmpresa == empresa.codigo)){
            		JaExiste = 1;
-			}
-           	if(DadosProduto.codigo >= maior){
-           			maior = DadosProduto.codigo +1;
-			}
+			} else if(DadosProduto.codigo >= maior)
+           		maior = DadosProduto.codigo +1;
 		}
     	fseek(Produto, 0, SEEK_SET);
 		 
@@ -473,6 +469,13 @@ void CadastroProdutos (EMPRESA empresa) {
 			MatProd.codProduto = DadosProduto.codigo;
 			fwrite(&DadosMaterial, sizeof(MATERIAL), 1, Material);
 			fwrite(&MatProd, sizeof(MATERIALPRODUTO), 1, MaterialProd);
+			printf ("\n\nMatProd.codMaterial = %d", MatProd.codMaterial);
+			printf ("\n\nMatProd.codProduto = %d", MatProd.codProduto);
+			printf ("\n\nMatProd.QuantidadeMateriais = %d", MatProd.QuantidadeMateriais);
+			printf ("\n\nDadosMaterial.nomeMaterial = %s", DadosMaterial.nomeMaterial);
+			printf ("\n\nDadosMaterial.codigo = %d", DadosMaterial.codigo);
+			printf ("\n\nDadosMaterial.unidade = %s", DadosMaterial.unidade);
+			
 		}
 		printf("\nDeseja adicionar outro material ? (S - sim ou N - nao): \n");
 		opcao = getch();
@@ -505,18 +508,18 @@ void ListarProdutos(EMPRESA empresa) {
 			while (fread(&matProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)) {
 				if (matProd.codProduto == prod.codigo) {
 					while (fread(&mat, sizeof(MATERIAL), 1, Material)){
-						if (matProd.codMaterial == mat.codigo) {
-							printf ("\t%d%s de %s\n", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
-						}
+						if (matProd.codMaterial == mat.codigo)
+							printf (" \t%d%s de %s\n", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
 					}
-					fseek(MaterialProd, 0, SEEK_SET);	
+				fseek(Material, 0, SEEK_SET);
 				}
 			}
 			existe = 1;
-			fseek(Material, 0, SEEK_SET);
+			fseek(MaterialProd, 0, SEEK_SET);	
 		}
 	}
 	fseek(Produto, 0, SEEK_SET);
+	printf ("Terminou de ler td pelo menos.");
 	getch();
 	fclose (Pedido);
 	fclose (Produto);
