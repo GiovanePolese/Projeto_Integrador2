@@ -423,10 +423,10 @@ void CadastroProdutos (EMPRESA empresa) {
 	
 	//--------------------------------------------------------------------//
 	
-	maior = 1;
-	JaExiste =0;
 	do{
-		printf ("Nome do material: ");
+		maior = 1;
+		JaExiste =0;
+		printf ("\nNome do material: ");
 		strcpy(nome, GetString(TAMANHO_NOME-1));
 			
 		while( fread(&DadosMaterial, sizeof(MATERIAL), 1, Material)){
