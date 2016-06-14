@@ -421,15 +421,14 @@ void CadastroProdutos (EMPRESA empresa) {
 	
 	do{
 		maior = 1;
-		JaExiste =0;
+		JaExiste = 0;
 		printf ("Nome do material: ");
 		strcpy(nome, GetString(TAMANHO_NOME-1));
 			
 		while( fread(&DadosMaterial, sizeof(MATERIAL), 1, Material)){
 			if((strcmp( DadosMaterial.nomeMaterial, nome ) == 0 )){
            		JaExiste = 1;
-			}
-			if(empresa.codigo >= maior)
+			}else if(empresa.codigo >= maior)
 	        	maior = DadosMaterial.codigo+1;
     	}
     	fseek(Material, 0, SEEK_SET);
