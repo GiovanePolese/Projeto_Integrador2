@@ -497,6 +497,7 @@ void CadastroProdutos (EMPRESA empresa) {
 }
 
 void ListarProdutos(EMPRESA empresa) {
+	//Ta errado a partir da linha 524. ARRUMA ESSA PORRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 
 	system("cls");
 	FILE *Pedido = fopen("pedido.dat","ab");
 	FILE *Produto = fopen("produtos.dat","rb");
@@ -507,7 +508,9 @@ void ListarProdutos(EMPRESA empresa) {
 	PRODUTO prod;
 	MATERIAL mat;
 	MATERIALPRODUTO matProd;
+	char nada[2]={' ',' '};
 	int existe = 0;
+<<<<<<< HEAD
 	while (fread(&prod, sizeof(PRODUTO), 1, Produto)!=NULL) { 
 		if (prod.codigoEmpresa == empresa.codigo) {
 			if (existe != 1) {
@@ -527,6 +530,35 @@ void ListarProdutos(EMPRESA empresa) {
 				existe = 1;
 			}
 			fseek(Material, 0, SEEK_SET);
+=======
+	while (fread(&prod, sizeof(PRODUTO), 1, Produto)) { 
+		if (empresa.codigo == prod.codigoEmpresa) {
+			printf("%d - %s - %d",empresa.codigo,empresa.nome,prod.codigoEmpresa);
+			if (existe != 1) {
+				printf("\n\tCodigo: %d",prod.codigo);
+				printf("\n\tNome: %s",prod.nomeProduto);
+				printf ("\n\tMateriais: ");
+			}
+			//else{
+				while (fread(&matProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)) {
+						if (matProd.codProduto == prod.codigo) {
+							printf ("\nCodigo do produto - %d; Material Produto - %d", prod.codigo, matProd.codProduto);
+							while (fread(&mat, sizeof(MATERIAL), 1, Material)){
+								if(mat.codigo!=0){
+									printf("\nCodigo do material - %d\n",mat.codigo);
+									if (matProd.codMaterial == mat.codigo) {
+										//printf ("Entrou no 2 ");
+										printf ("\n\t%d%s de %s", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
+									}
+								}
+							}	
+						fseek(Material, 0, SEEK_SET);
+					}	
+				}
+				fseek(MaterialProd, 0, SEEK_SET);
+				existe = 1;
+			//}
+>>>>>>> origin/Nicolas
 		}
 		fseek(Produto, 0, SEEK_SET);
 		getch();
@@ -536,6 +568,16 @@ void ListarProdutos(EMPRESA empresa) {
 		fclose (Material);
 		fclose (MaterialProd);
 	}
+<<<<<<< HEAD
+=======
+	fseek(Produto, 0, SEEK_SET);
+	getch();
+	fclose (Pedido);
+	fclose (Produto);
+	fclose (Empresa);
+	fclose (Material);
+	fclose (MaterialProd);
+>>>>>>> origin/Nicolas
 }
 
 void CadastrarMateriaisDisponiveis () {
