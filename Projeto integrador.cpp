@@ -38,6 +38,13 @@ typedef struct{
 }PRODUTO;
 
 typedef struct{
+	int codigo;
+	char nomeMaterial[TAMANHO_NOME];
+	int codigoFornecedor;
+	char unidade[TAMANHO_UNIDADE];
+}MATERIALFORNECEDOR;
+
+typedef struct{
 	int codProduto;
 	int codMaterial;
 	int QuantidadeMateriais;
@@ -54,9 +61,10 @@ void TelaCadastroLogin();
 void MenuEmpresa(EMPRESA empresa);
 void MenuFornecedor(FORNECEDOR fornecedor);
 void CadastroProdutos (EMPRESA empresa);
-void CadastrarMateriaisDisponiveis ();
+void CadastrarMateriaisDisponiveis (FORNECEDOR fornecedor);
 void Pedido(EMPRESA empresa);
 void ListarProdutos(EMPRESA empresa);
+void ListarMateriais(FORNECEDOR fornecedor);
 
 int main() {
 	char opcao;
@@ -313,7 +321,9 @@ void MenuEmpresa(EMPRESA empresa) {
 	
 	do {
 		system ("cls");	
+		system ("color 6");
 		printf("\t\t%s\n\n",empresa.nome);
+		system ("color 7");
 		printf ("MENU EMPRESA:\n\n");
 		printf ("DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL. \n");
 		printf ("1. Cadastrar Produtos.\n");
@@ -359,6 +369,7 @@ void MenuFornecedor(FORNECEDOR fornecedor) {
 		printf ("DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL. \n");
 		printf ("1. Pedidos.\n");
 		printf ("2. Cadastrar materiais disponiveis.\n");
+		printf ("3. Listar materiais disponiveis.\n");
 
 		opcao = getch();
 		
@@ -367,8 +378,11 @@ void MenuFornecedor(FORNECEDOR fornecedor) {
 				break;
 				
 			case '2':
-				CadastrarMateriaisDisponiveis ();	
+				CadastrarMateriaisDisponiveis (fornecedor);	
 				break;
+				
+			case '3':
+				ListarMateriais(fornecedor);
 								
 			default:
 				if (opcao != 27) {
@@ -379,7 +393,69 @@ void MenuFornecedor(FORNECEDOR fornecedor) {
 		}
 	} while (opcao != 27);
 }
-
+void CadastrarMateriais(int CodigoProduto){
+	FILE *Material = fopen("material.dat","ab+");
+	FILE *MaterialProd = fopen("materialproduto.dat","ab+");
+	PRODUTO DadosProduto;
+	MATERIAL DadosMaterial;
+	MATERIALPRODUTO MatProd;
+	int JaExiste=0, maior,maior2, codmat;
+	char nome[TAMANHO_NOME],opcao, unidade; 
+	JaExiste=0;
+	
+	printf ("Nome do material: ");
+	strcpy(nome, GetString(TAMANHO_NOME-1));
+	
+	maior=1;
+	
+	while( fread(&DadosMaterial, sizeof(MATERIAL), 1, Material)){
+		if(stricmp( DadosMaterial.nomeMaterial, nome ) == 0 ){
+			JaExiste=1;
+		}else if(DadosMaterial.codigo >= maior){
+        	maior = DadosMaterial.codigo+1;
+		}
+	}
+	fseek(Material, 0, SEEK_SET);
+	
+	if(JaExiste == 1 ){
+		printf("Material ja cadastrado!");
+		printf("\n\n");
+	}else{
+		do{
+			printf("Selecione a unidade de medida: \n 1 para Kg(kilograma)\n 2 para L(litro)\n 3 para Un(unidade): ");
+			unidade = getch();
+			switch(unidade){
+				case '1':
+					strcpy(DadosMaterial.unidade,"Kg");
+				break;
+				
+				case '2':
+					strcpy(DadosMaterial.unidade,"L");
+				break;
+				
+				case '3':
+					strcpy(DadosMaterial.unidade,"Un");
+				break;
+				
+				default:
+					unidade=4;
+				break;
+			}
+		}while(unidade==4);
+		printf("\n Digite a quantidade de %s necessario(a) para este produto : ",DadosMaterial.unidade);
+		scanf("%d",&MatProd.QuantidadeMateriais);
+		
+		strcpy(DadosMaterial.nomeMaterial, nome);
+		DadosMaterial.codigo = maior;
+		MatProd.codMaterial = maior;
+		MatProd.codProduto = CodigoProduto;
+		fwrite(&MatProd, sizeof(MATERIALPRODUTO), 1, MaterialProd);
+		fwrite(&DadosMaterial, sizeof(MATERIAL), 1, Material);
+	}
+	
+	fclose(Material);
+	fclose(MaterialProd);
+}
 void CadastroProdutos (EMPRESA empresa) {
 	system("cls");
 	FILE *Produto = fopen ("produtos.dat", "ab+");
@@ -388,20 +464,21 @@ void CadastroProdutos (EMPRESA empresa) {
 	PRODUTO DadosProduto;
 	MATERIAL DadosMaterial;
 	MATERIALPRODUTO MatProd;
-	int JaExiste=0, maior, codmat;
+	int JaExiste=0, maior2, codmat;
 	char nome[TAMANHO_NOME],opcao, unidade;
 	printf ("CADASTRO DE PRODUTOS: \n\n");
 	do{
 		JaExiste = 0;
 		printf ("Nome do produto: ");
 		strcpy(nome, GetString(TAMANHO_NOME-1));
-		maior = 1;
+		maior2 = 1;
 		while( fread(&DadosProduto, sizeof(PRODUTO), 1, Produto)){
 
 			if((stricmp(DadosProduto.nomeProduto, nome) == 0) && (DadosProduto.codigoEmpresa == empresa.codigo)){
            		JaExiste = 1;
-			} else if(DadosProduto.codigo >= maior)
-           		maior = DadosProduto.codigo +1;
+			} else if(DadosProduto.codigo >= maior2){
+           		maior2 = DadosProduto.codigo +1;
+			}
 		}
     	fseek(Produto, 0, SEEK_SET);
 		 
@@ -410,7 +487,7 @@ void CadastroProdutos (EMPRESA empresa) {
     		printf("\n");
 		}else{
 			strcpy(DadosProduto.nomeProduto, nome);
-			DadosProduto.codigo = maior;
+			DadosProduto.codigo = maior2;
 			DadosProduto.codigoEmpresa = empresa.codigo;
 			fwrite(&DadosProduto,sizeof(PRODUTO),1,Produto);
 			fclose(Produto);
@@ -418,70 +495,11 @@ void CadastroProdutos (EMPRESA empresa) {
 	}while(JaExiste==1);
 	
 	//--------------------------------------------------------------------//
-	
 	do{
-		maior = 1;
-		JaExiste = 0;
-		printf ("Nome do material: ");
-		strcpy(nome, GetString(TAMANHO_NOME-1));
-			
-		while( fread(&DadosMaterial, sizeof(MATERIAL), 1, Material)){
-			if((strcmp( DadosMaterial.nomeMaterial, nome ) == 0 ){
-           		JaExiste = 1;
-			}else if(empresa.codigo >= maior)
-	        	maior = DadosMaterial.codigo+1;
-    	}
-    	fseek(Material, 0, SEEK_SET);
-    	
-    	if(JaExiste == 1 ){
-    		printf("Material ja cadastrado!");
-    		printf("\n\n");
-		}else{
-			do{
-				printf("Selecione a unidade de medida: \n 1 para Kg(kilograma)\n 2 para L(litro)\n 3 para Un(unidade): ");
-				unidade = getch();
-				switch(unidade){
-					case '1':
-						strcpy(DadosMaterial.unidade,"Kg");
-					break;
-					
-					case '2':
-						strcpy(DadosMaterial.unidade,"L");
-					break;
-					
-					case '3':
-						strcpy(DadosMaterial.unidade,"Un");
-					break;
-					
-					default:
-						unidade=4;
-					break;
-				}
-			}while(unidade==4);
-			printf("\nDigite a quantidade de %s necessario(a) para este produto : ",DadosMaterial.unidade);
-			scanf("%d",&MatProd.QuantidadeMateriais);
-			
-			
-			strcpy(DadosMaterial.nomeMaterial, nome);
-			DadosMaterial.codigo = maior;
-			MatProd.codMaterial = maior;
-			MatProd.codProduto = DadosProduto.codigo;
-			fwrite(&DadosMaterial, sizeof(MATERIAL), 1, Material);
-			fwrite(&MatProd, sizeof(MATERIALPRODUTO), 1, MaterialProd);
-			printf ("\n\nMatProd.codMaterial = %d", MatProd.codMaterial);
-			printf ("\n\nMatProd.codProduto = %d", MatProd.codProduto);
-			printf ("\n\nMatProd.QuantidadeMateriais = %d", MatProd.QuantidadeMateriais);
-			printf ("\n\nDadosMaterial.nomeMaterial = %s", DadosMaterial.nomeMaterial);
-			printf ("\n\nDadosMaterial.codigo = %d", DadosMaterial.codigo);
-			printf ("\n\nDadosMaterial.unidade = %s", DadosMaterial.unidade);
-			
-		}
-		printf("\nDeseja adicionar outro material ? (S - sim ou N - nao): \n");
+		CadastrarMateriais(DadosProduto.codigo);
+		printf("\nDeseja adicionar outro material ? (S - sim ou N - nao): \n\n");
 		opcao = getch();
-		printf ("\n");
 	}while(opcao=='s'||opcao=='S');
-	fclose(Material);
-	fclose(MaterialProd);
 }
 
 void ListarProdutos(EMPRESA empresa) {
@@ -497,28 +515,27 @@ void ListarProdutos(EMPRESA empresa) {
 	MATERIALPRODUTO matProd;
 	int existe = 0;
 	
-	while (fread(&prod, sizeof(PRODUTO), 1, Produto)) { 
+	while (fread(&prod, sizeof(PRODUTO), 1, Produto)!=NULL) { 
 		if (prod.codigoEmpresa == empresa.codigo) {
-			if (existe != 1) {
-				printf(" Codigo: %d\n",prod.codigo);
-				printf(" Nome: %s\n",prod.nomeProduto);
-				printf (" Materiais: \n");
-			}
-			while (fread(&matProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)) {
+			printf(" Codigo: %d\n",prod.codigo);
+			printf(" Nome: %s\n",prod.nomeProduto);
+			printf (" Materiais: \n");
+			
+			while (fread(&matProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)!=NULL) {
 				if (matProd.codProduto == prod.codigo) {
-					while (fread(&mat, sizeof(MATERIAL), 1, Material)){
-						if (matProd.codMaterial == mat.codigo)
-							printf (" \t%d%s de %s\n", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
+					while (fread(&mat, sizeof(MATERIAL), 1, Material)!=NULL){
+						if (matProd.codMaterial == mat.codigo) {
+							printf ("\t%d%s de %s\n", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
+						}
 					}
-				fseek(Material, 0, SEEK_SET);
 				}
+				fseek(Material, 0, SEEK_SET);
 			}
-			existe = 1;
 			fseek(MaterialProd, 0, SEEK_SET);	
 		}
 	}
+	
 	fseek(Produto, 0, SEEK_SET);
-	printf ("Terminou de ler td pelo menos.");
 	getch();
 	fclose (Pedido);
 	fclose (Produto);
@@ -527,11 +544,30 @@ void ListarProdutos(EMPRESA empresa) {
 	fclose (MaterialProd);
 }
 
-void CadastrarMateriaisDisponiveis () {
+void ListarMateriais(FORNECEDOR fornecedor) {
+	system("cls");
+	FILE *Material = fopen ("MaterialDoFornecedor.dat", "rb");
+	MATERIALFORNECEDOR mat;
+	int existe = 0;
+	
+	while (fread(&mat, sizeof(MATERIALFORNECEDOR), 1, Material)!=NULL) { 
+		if (mat.codigoFornecedor == fornecedor.codigo) {
+			printf(" Codigo: %d\n",mat.codigo);
+			printf(" Nome: %s\n",mat.nomeMaterial);
+			printf (" Unidade: %s\n\n", mat.unidade);
+		}
+	}
+	fseek(Material, 0, SEEK_SET);
+	getch();
+	
+	fclose (Material);
+}
+
+void CadastrarMateriaisDisponiveis (FORNECEDOR fornecedor) {
 	system ("cls");
 	
 	FILE *Material = fopen ("MaterialDoFornecedor.dat", "ab+");
-	MATERIAL mat;
+	MATERIALFORNECEDOR mat;
 	char nome[TAMANHO_NOME], unidade;
 	int JaExiste, maior;
 	
@@ -541,23 +577,20 @@ void CadastrarMateriaisDisponiveis () {
 		printf ("Nome do material: ");
 		strcpy(nome, GetString(TAMANHO_NOME-1));
 		maior = 1;
-		while( fread(&mat, sizeof(MATERIAL), 1, Material)){
-
-			if(strcmp(mat.nomeMaterial, nome) == 0){
+		while( fread(&mat, sizeof(MATERIALFORNECEDOR), 1, Material)){
+			if(strcmp(mat.nomeMaterial, nome) == 0 && mat.codigoFornecedor == fornecedor.codigo)
            		JaExiste = 1;
-			}
-           	if(mat.codigo >= maior){
-           			maior = mat.codigo +1;
-			}
+			else if(mat.codigo >= maior)
+           		maior = mat.codigo +1;
 		}
     	fseek(Material, 0, SEEK_SET);
 		 
 		if(JaExiste == 1 ){
     		printf("\nMaterial ja cadastrado !\n");
-    		printf("\n");
 		}else{
 			strcpy(mat.nomeMaterial, nome);
 			mat.codigo = maior;
+			mat.codigoFornecedor = fornecedor.codigo;
 		}
 	}while(JaExiste==1);
 	
@@ -582,6 +615,7 @@ void CadastrarMateriaisDisponiveis () {
 			break;
 		}
 	}while(unidade==4);
+	fwrite(&mat, sizeof(MATERIALFORNECEDOR), 1, Material);
 	
 	fclose (Material);
 }
