@@ -38,6 +38,13 @@ typedef struct{
 }PRODUTO;
 
 typedef struct{
+	int codigo;
+	char nomeMaterial[TAMANHO_NOME];
+	int codigoFornecedor;
+	char unidade[TAMANHO_UNIDADE];
+}MATERIALFORNECEDOR;
+
+typedef struct{
 	int codProduto;
 	int codMaterial;
 	int QuantidadeMateriais;
@@ -54,9 +61,10 @@ void TelaCadastroLogin();
 void MenuEmpresa(EMPRESA empresa);
 void MenuFornecedor(FORNECEDOR fornecedor);
 void CadastroProdutos (EMPRESA empresa);
-void CadastrarMateriaisDisponiveis ();
+void CadastrarMateriaisDisponiveis (FORNECEDOR fornecedor);
 void Pedido(EMPRESA empresa);
 void ListarProdutos(EMPRESA empresa);
+void ListarMateriais(FORNECEDOR fornecedor);
 
 int main() {
 	char opcao;
@@ -361,6 +369,7 @@ void MenuFornecedor(FORNECEDOR fornecedor) {
 		printf ("DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL. \n");
 		printf ("1. Pedidos.\n");
 		printf ("2. Cadastrar materiais disponiveis.\n");
+		printf ("3. Listar materiais disponiveis.\n");
 
 		opcao = getch();
 		
@@ -369,8 +378,11 @@ void MenuFornecedor(FORNECEDOR fornecedor) {
 				break;
 				
 			case '2':
-				CadastrarMateriaisDisponiveis ();	
+				CadastrarMateriaisDisponiveis (fornecedor);	
 				break;
+				
+			case '3':
+				ListarMateriais(fornecedor);
 								
 			default:
 				if (opcao != 27) {
@@ -452,7 +464,7 @@ void CadastroProdutos (EMPRESA empresa) {
 	PRODUTO DadosProduto;
 	MATERIAL DadosMaterial;
 	MATERIALPRODUTO MatProd;
-	int JaExiste=0, maior,maior2, codmat;
+	int JaExiste=0, maior2, codmat;
 	char nome[TAMANHO_NOME],opcao, unidade;
 	printf ("CADASTRO DE PRODUTOS: \n\n");
 	do{
@@ -464,7 +476,7 @@ void CadastroProdutos (EMPRESA empresa) {
 
 			if((stricmp(DadosProduto.nomeProduto, nome) == 0) && (DadosProduto.codigoEmpresa == empresa.codigo)){
            		JaExiste = 1;
-			}else if(DadosProduto.codigo >= maior){
+			} else if(DadosProduto.codigo >= maior2){
            		maior2 = DadosProduto.codigo +1;
 			}
 		}
@@ -501,7 +513,7 @@ void ListarProdutos(EMPRESA empresa) {
 	PRODUTO prod;
 	MATERIAL mat;
 	MATERIALPRODUTO matProd;
-	int existe = 0,i=0,j=0;
+	int existe = 0;
 	
 	while (fread(&prod, sizeof(PRODUTO), 1, Produto)!=NULL) { 
 		if (prod.codigoEmpresa == empresa.codigo) {
@@ -532,11 +544,30 @@ void ListarProdutos(EMPRESA empresa) {
 	fclose (MaterialProd);
 }
 
-void CadastrarMateriaisDisponiveis () {
+void ListarMateriais(FORNECEDOR fornecedor) {
+	system("cls");
+	FILE *Material = fopen ("MaterialDoFornecedor.dat", "rb");
+	MATERIALFORNECEDOR mat;
+	int existe = 0;
+	
+	while (fread(&mat, sizeof(MATERIALFORNECEDOR), 1, Material)!=NULL) { 
+		if (mat.codigoFornecedor == fornecedor.codigo) {
+			printf(" Codigo: %d\n",mat.codigo);
+			printf(" Nome: %s\n",mat.nomeMaterial);
+			printf (" Unidade: %s\n\n", mat.unidade);
+		}
+	}
+	fseek(Material, 0, SEEK_SET);
+	getch();
+	
+	fclose (Material);
+}
+
+void CadastrarMateriaisDisponiveis (FORNECEDOR fornecedor) {
 	system ("cls");
 	
 	FILE *Material = fopen ("MaterialDoFornecedor.dat", "ab+");
-	MATERIAL mat;
+	MATERIALFORNECEDOR mat;
 	char nome[TAMANHO_NOME], unidade;
 	int JaExiste, maior;
 	
@@ -546,23 +577,20 @@ void CadastrarMateriaisDisponiveis () {
 		printf ("Nome do material: ");
 		strcpy(nome, GetString(TAMANHO_NOME-1));
 		maior = 1;
-		while( fread(&mat, sizeof(MATERIAL), 1, Material)){
-
-			if(strcmp(mat.nomeMaterial, nome) == 0){
+		while( fread(&mat, sizeof(MATERIALFORNECEDOR), 1, Material)){
+			if(strcmp(mat.nomeMaterial, nome) == 0 && mat.codigoFornecedor == fornecedor.codigo)
            		JaExiste = 1;
-			}
-           	if(mat.codigo >= maior){
-           			maior = mat.codigo +1;
-			}
+			else if(mat.codigo >= maior)
+           		maior = mat.codigo +1;
 		}
     	fseek(Material, 0, SEEK_SET);
 		 
 		if(JaExiste == 1 ){
     		printf("\nMaterial ja cadastrado !\n");
-    		printf("\n");
 		}else{
 			strcpy(mat.nomeMaterial, nome);
 			mat.codigo = maior;
+			mat.codigoFornecedor = fornecedor.codigo;
 		}
 	}while(JaExiste==1);
 	
@@ -587,6 +615,7 @@ void CadastrarMateriaisDisponiveis () {
 			break;
 		}
 	}while(unidade==4);
+	fwrite(&mat, sizeof(MATERIALFORNECEDOR), 1, Material);
 	
 	fclose (Material);
 }
