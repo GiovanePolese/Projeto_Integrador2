@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <conio.c>
 #include <string.h>
 #include <conio.h>
 #include <windows.h>
@@ -29,7 +30,7 @@ typedef struct {
 	int codigo;
 	char nomeMaterial[TAMANHO_NOME];
 	char unidade[TAMANHO_UNIDADE];
-} MATERIAL;
+}MATERIAL;
 
 typedef struct{
 	int codigo;
@@ -321,9 +322,9 @@ void MenuEmpresa(EMPRESA empresa) {
 	
 	do {
 		system ("cls");	
-		system ("color 6");
+		textcolor (YELLOW);
 		printf("\t\t%s\n\n",empresa.nome);
-		system ("color 7");
+		textcolor (WHITE);
 		printf ("MENU EMPRESA:\n\n");
 		printf ("DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL. \n");
 		printf ("1. Cadastrar Produtos.\n");
@@ -365,6 +366,9 @@ void MenuFornecedor(FORNECEDOR fornecedor) {
 	
 	do {
 		system ("cls");	
+		textcolor (YELLOW);
+		printf("\t\t%s\n\n",fornecedor.nome);
+		textcolor (WHITE);
 		printf ("MENU FORNECEDOR:\n\n");
 		printf ("DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL. \n");
 		printf ("1. Pedidos.\n");
@@ -456,6 +460,7 @@ void CadastrarMateriais(int CodigoProduto){
 	fclose(Material);
 	fclose(MaterialProd);
 }
+
 void CadastroProdutos (EMPRESA empresa) {
 	system("cls");
 	FILE *Produto = fopen ("produtos.dat", "ab+");
@@ -534,8 +539,8 @@ void ListarProdutos(EMPRESA empresa) {
 			fseek(MaterialProd, 0, SEEK_SET);	
 		}
 	}
-	
 	fseek(Produto, 0, SEEK_SET);
+	
 	getch();
 	fclose (Pedido);
 	fclose (Produto);
@@ -638,38 +643,35 @@ void Pedido(EMPRESA empresa){
 	printf("Digite o produto desejado : ");
 	strcpy(produto,GetString(TAMANHO_NOME-1));
 	
-	while (fread(&prod, sizeof(PRODUTO), 1, Produto)) { 
-		if(stricmp(prod.nomeProduto, produto)==0){
+	while (fread(&prod, sizeof(PRODUTO), 1, Produto)!=NULL) { 
+		if(stricmp(prod.nomeProduto, produto)==0) {
 			if (prod.codigoEmpresa == empresa.codigo) {
-				if (existe != 1) {
-					printf("\tCodigo: %d",prod.codigo);
-					printf("\tNome: %s",prod.nomeProduto);
-					printf ("\tMateriais: ");
-				}
-				while (fread(&matProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)) {
-					printf ("\nCodigo do produto - %d; Material Produto - %d", prod.codigo, matProd.codProduto);
+				printf(" Codigo: %d\n",prod.codigo);
+				printf(" Nome: %s\n",prod.nomeProduto);
+				printf (" Materiais: \n");
+				existe = 1;
+				
+				while (fread(&matProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)!=NULL) {
 					if (matProd.codProduto == prod.codigo) {
-						printf ("\nEntrou no 1\n");
-						while (fread(&mat, sizeof(MATERIAL), 1, Material)){
+						while (fread(&mat, sizeof(MATERIAL), 1, Material)!=NULL){
 							if (matProd.codMaterial == mat.codigo) {
-								printf ("Entrou no 2 ");
-								//printf ("\n\t%d%s de %s", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
+								printf ("\t%d%s de %s\n", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
 							}
 						}
 					}
+					fseek(Material, 0, SEEK_SET);
 				}
-				existe = 1;
+				fseek(MaterialProd, 0, SEEK_SET);	
 			}
 		}
 	}
-	fseek(Material, 0, SEEK_SET);
-	fseek(MaterialProd, 0, SEEK_SET);
 	fseek(Produto, 0, SEEK_SET);
 	
 	if(existe == 0){
-		printf("Produto %s nao cadastrado.\n",produto);
+		printf("Produto %s nao cadastrado.\n", produto);
+		getch();
 	}else{
-		printf("Este produto que deseja solicitar ? (S - Sim / N - Nao)");
+		printf("\nEste produto que deseja solicitar ? (S - Sim / N - Nao)");
 		opcao = getch();
 		do{
 			if(opcao=='s' || opcao=='S'){
@@ -682,7 +684,6 @@ void Pedido(EMPRESA empresa){
 		}while(opcao!='S' && opcao !='s' && opcao !='N' && opcao !='n');
 	}
 		
-	system("pause");
 	fclose (Pedido);
 	fclose (Produto);
 	fclose (Empresa);
