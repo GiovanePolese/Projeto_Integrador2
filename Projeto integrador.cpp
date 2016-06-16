@@ -426,7 +426,7 @@ void CadastroProdutos (EMPRESA empresa) {
 		strcpy(nome, GetString(TAMANHO_NOME-1));
 			
 		while( fread(&DadosMaterial, sizeof(MATERIAL), 1, Material)){
-			if((strcmp( DadosMaterial.nomeMaterial, nome ) == 0 )){
+			if((strcmp( DadosMaterial.nomeMaterial, nome ) == 0 ){
            		JaExiste = 1;
 			}else if(empresa.codigo >= maior)
 	        	maior = DadosMaterial.codigo+1;
