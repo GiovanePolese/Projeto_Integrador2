@@ -381,7 +381,69 @@ void MenuFornecedor(FORNECEDOR fornecedor) {
 		}
 	} while (opcao != 27);
 }
-
+void CadastrarMateriais(int CodigoProduto){
+	FILE *Material = fopen("material.dat","ab+");
+	FILE *MaterialProd = fopen("materialproduto.dat","ab+");
+	PRODUTO DadosProduto;
+	MATERIAL DadosMaterial;
+	MATERIALPRODUTO MatProd;
+	int JaExiste=0, maior,maior2, codmat;
+	char nome[TAMANHO_NOME],opcao, unidade; 
+	JaExiste=0;
+	
+	printf ("Nome do material: ");
+	strcpy(nome, GetString(TAMANHO_NOME-1));
+	
+	maior=1;
+	
+	while( fread(&DadosMaterial, sizeof(MATERIAL), 1, Material)){
+		if(stricmp( DadosMaterial.nomeMaterial, nome ) == 0 ){
+			JaExiste=1;
+		}else if(DadosMaterial.codigo >= maior){
+        	maior = DadosMaterial.codigo+1;
+		}
+	}
+	fseek(Material, 0, SEEK_SET);
+	
+	if(JaExiste == 1 ){
+		printf("Material ja cadastrado!");
+		printf("\n\n");
+	}else{
+		do{
+			printf("Selecione a unidade de medida: \n 1 para Kg(kilograma)\n 2 para L(litro)\n 3 para Un(unidade): ");
+			unidade = getch();
+			switch(unidade){
+				case '1':
+					strcpy(DadosMaterial.unidade,"Kg");
+				break;
+				
+				case '2':
+					strcpy(DadosMaterial.unidade,"L");
+				break;
+				
+				case '3':
+					strcpy(DadosMaterial.unidade,"Un");
+				break;
+				
+				default:
+					unidade=4;
+				break;
+			}
+		}while(unidade==4);
+		printf("\n Digite a quantidade de %s necessario(a) para este produto : ",DadosMaterial.unidade);
+		scanf("%d",&MatProd.QuantidadeMateriais);
+		
+		strcpy(DadosMaterial.nomeMaterial, nome);
+		DadosMaterial.codigo = maior;
+		MatProd.codMaterial = maior;
+		MatProd.codProduto = CodigoProduto;
+		fwrite(&MatProd, sizeof(MATERIALPRODUTO), 1, MaterialProd);
+		fwrite(&DadosMaterial, sizeof(MATERIAL), 1, Material);
+	}
+	
+	fclose(Material);
+	fclose(MaterialProd);
+}
 void CadastroProdutos (EMPRESA empresa) {
 	system("cls");
 	FILE *Produto = fopen ("produtos.dat", "ab+");
@@ -421,80 +483,11 @@ void CadastroProdutos (EMPRESA empresa) {
 	}while(JaExiste==1);
 	
 	//--------------------------------------------------------------------//
-		maior = 0;
-		JaExiste = 0;
 	do{
-		if(maior==0){
-			printf ("Nome do material: ");
-			strcpy(nome, GetString(TAMANHO_NOME-1));
-			
-			maior=1;
-			printf("\n\n%d",maior);
-			
-			while( fread(&DadosMaterial, sizeof(MATERIAL), 1, Material)){
-				if(DadosMaterial.codigo > maior){
-		        	maior = DadosMaterial.codigo+1;
-				}
-	    	}
-	    	printf("\n\n%d",maior);
-	    	fseek(Material, 0, SEEK_SET);
-		}else{
-			printf ("Nome do material: ");
-			strcpy(nome, GetString(TAMANHO_NOME-1));
-			while( fread(&DadosMaterial, sizeof(MATERIAL), 1, Material)){
-				while( fread(&MatProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)){
-					if(stricmp( DadosMaterial.nomeMaterial, nome ) == 0 && MatProd.codMaterial == maior && MatProd.codProduto == DadosProduto.codigo){
-				        JaExiste = 1;
-					}
-				}
-			}
-				if(JaExiste==0){
-						maior++;
-				}
-		}
-		
-    	if(JaExiste == 1 ){
-    		printf("Material ja cadastrado!");
-    		printf("\n\n");
-		}else{
-			do{
-				printf("Selecione a unidade de medida: \n 1 para Kg(kilograma)\n 2 para L(litro)\n 3 para Un(unidade): ");
-				unidade = getch();
-				switch(unidade){
-					case '1':
-						strcpy(DadosMaterial.unidade,"Kg");
-					break;
-					
-					case '2':
-						strcpy(DadosMaterial.unidade,"L");
-					break;
-					
-					case '3':
-						strcpy(DadosMaterial.unidade,"Un");
-					break;
-					
-					default:
-						unidade=4;
-					break;
-				}
-			}while(unidade==4);
-			printf("\n Digite a quantidade de %s necessario(a) para este produto : ",DadosMaterial.unidade);
-			scanf("%d",&MatProd.QuantidadeMateriais);
-			
-				
-			strcpy(DadosMaterial.nomeMaterial, nome);
-			DadosMaterial.codigo = maior;
-			MatProd.codMaterial = maior;
-			MatProd.codProduto = DadosProduto.codigo;
-			fwrite(&MatProd, sizeof(MATERIALPRODUTO), 1, MaterialProd);
-			fwrite(&DadosMaterial, sizeof(MATERIAL), 1, Material);
-			printf("\n\tMatProd.codMaterial- %d\n\tMatProd.codProduto- %d\n\tMatProd.QuantidadeMateriais - %d",MatProd.codMaterial,MatProd.codProduto,MatProd.QuantidadeMateriais);
-		}
+		CadastrarMateriais(DadosProduto.codigo);
 		printf("\nDeseja adicionar outro material ? (S - sim ou N - nao): \n\n");
 		opcao = getch();
 	}while(opcao=='s'||opcao=='S');
-	fclose(Material);
-	fclose(MaterialProd);
 }
 
 void ListarProdutos(EMPRESA empresa) {
