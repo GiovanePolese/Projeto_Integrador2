@@ -8,9 +8,24 @@
 #include <windows.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <time.h>
+#include <locale.h>
+
+#define MOVE_UP 72
+#define MOVE_DOWN 80
+#define MOVE_RIGHT 77
+#define ESC 27
+#define ENTER 13
+
+
 
 // Needs the argument MaxSize, which is the maximum size of the password
 // Returns the string password
+
+void cursor(COORD coord,char c) {
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+	printf("%c", c);
+}
 
 char *GetPassword (int MaxSize) {
 	
@@ -72,4 +87,10 @@ char *GetString (int MaxSize) {
 	printf ("\n");
 	
 	return string;
+}
+
+void menu(int id){
+	COORD cr;
+	
+	
 }

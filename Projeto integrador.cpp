@@ -390,20 +390,20 @@ void CadastroProdutos (EMPRESA empresa) {
 	PRODUTO DadosProduto;
 	MATERIAL DadosMaterial;
 	MATERIALPRODUTO MatProd;
-	int JaExiste=0, maior, codmat;
+	int JaExiste=0, maior,maior2, codmat;
 	char nome[TAMANHO_NOME],opcao, unidade;
 	printf ("CADASTRO DE PRODUTOS: \n\n");
 	do{
 		JaExiste = 0;
 		printf ("Nome do produto: ");
 		strcpy(nome, GetString(TAMANHO_NOME-1));
-		maior = 1;
+		maior2 = 1;
 		while( fread(&DadosProduto, sizeof(PRODUTO), 1, Produto)){
 
 			if((stricmp(DadosProduto.nomeProduto, nome) == 0) && (DadosProduto.codigoEmpresa == empresa.codigo)){
            		JaExiste = 1;
 			}else if(DadosProduto.codigo >= maior){
-           		maior = DadosProduto.codigo +1;
+           		maior2 = DadosProduto.codigo +1;
 			}
 		}
     	fseek(Produto, 0, SEEK_SET);
@@ -413,7 +413,7 @@ void CadastroProdutos (EMPRESA empresa) {
     		printf("\n");
 		}else{
 			strcpy(DadosProduto.nomeProduto, nome);
-			DadosProduto.codigo = maior;
+			DadosProduto.codigo = maior2;
 			DadosProduto.codigoEmpresa = empresa.codigo;
 			fwrite(&DadosProduto,sizeof(PRODUTO),1,Produto);
 			fclose(Produto);
@@ -421,23 +421,38 @@ void CadastroProdutos (EMPRESA empresa) {
 	}while(JaExiste==1);
 	
 	//--------------------------------------------------------------------//
-		maior = 1;
+		maior = 0;
 		JaExiste = 0;
 	do{
-		printf ("Nome do material: ");
-		strcpy(nome, GetString(TAMANHO_NOME-1));
-		if(maior==1){
+		if(maior==0){
+			printf ("Nome do material: ");
+			strcpy(nome, GetString(TAMANHO_NOME-1));
+			
+			maior=1;
+			printf("\n\n%d",maior);
+			
 			while( fread(&DadosMaterial, sizeof(MATERIAL), 1, Material)){
-				if((strcmp( DadosMaterial.nomeMaterial, nome ) == 0 )){
-	           		JaExiste = 1;
-				}else if(empresa.codigo >= maior)
+				if(DadosMaterial.codigo > maior){
 		        	maior = DadosMaterial.codigo+1;
+				}
 	    	}
+	    	printf("\n\n%d",maior);
 	    	fseek(Material, 0, SEEK_SET);
 		}else{
-			maior++;
+			printf ("Nome do material: ");
+			strcpy(nome, GetString(TAMANHO_NOME-1));
+			while( fread(&DadosMaterial, sizeof(MATERIAL), 1, Material)){
+				while( fread(&MatProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)){
+					if(stricmp( DadosMaterial.nomeMaterial, nome ) == 0 && MatProd.codMaterial == maior && MatProd.codProduto == DadosProduto.codigo){
+				        JaExiste = 1;
+					}
+				}
+			}
+				if(JaExiste==0){
+						maior++;
+				}
 		}
-    	
+		
     	if(JaExiste == 1 ){
     		printf("Material ja cadastrado!");
     		printf("\n\n");
@@ -466,6 +481,7 @@ void CadastroProdutos (EMPRESA empresa) {
 			printf("\n Digite a quantidade de %s necessario(a) para este produto : ",DadosMaterial.unidade);
 			scanf("%d",&MatProd.QuantidadeMateriais);
 			
+				
 			strcpy(DadosMaterial.nomeMaterial, nome);
 			DadosMaterial.codigo = maior;
 			MatProd.codMaterial = maior;
@@ -474,7 +490,7 @@ void CadastroProdutos (EMPRESA empresa) {
 			fwrite(&DadosMaterial, sizeof(MATERIAL), 1, Material);
 			printf("\n\tMatProd.codMaterial- %d\n\tMatProd.codProduto- %d\n\tMatProd.QuantidadeMateriais - %d",MatProd.codMaterial,MatProd.codProduto,MatProd.QuantidadeMateriais);
 		}
-		printf("\nDeseja adicionar outro material ? (S - sim ou N - nao): \n");
+		printf("\nDeseja adicionar outro material ? (S - sim ou N - nao): \n\n");
 		opcao = getch();
 	}while(opcao=='s'||opcao=='S');
 	fclose(Material);
