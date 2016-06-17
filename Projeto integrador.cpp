@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <conio.c>
-#include <malloc.h>
 #include <string.h>
 #include <conio.h>
 #include <windows.h>
@@ -33,13 +32,6 @@ typedef struct {
 	char unidade[TAMANHO_UNIDADE];
 }MATERIAL;
 
-typedef struct MATERIAL2{
-	int codigo;
-	char nomeMaterial[TAMANHO_NOME];
-	char unidade[TAMANHO_UNIDADE];
-	struct MATERIAL2 *proximo;
-};
-
 typedef struct{
 	int codigo;
 	char nomeProduto[TAMANHO_NOME];
@@ -63,7 +55,14 @@ typedef struct{
 typedef struct{
 	int codProduto;
 	int quantidadePedido;
+	int codigoEmpresa;
 } PEDIDO;
+
+typedef struct nomes{
+	char nome[TAMANHO_NOME];
+	int cod;
+	struct nomes *p;
+}NOMES;
 
 void TelaDeLogin();
 void TelaCadastroLogin();
@@ -356,7 +355,6 @@ void MenuEmpresa(EMPRESA empresa) {
 			break;
 				
 			case '4':
-		
 			break;
 								
 			default:
@@ -541,15 +539,20 @@ void ListarProdutos(EMPRESA empresa) {
 					while (fread(&mat, sizeof(MATERIAL), 1, Material)!=NULL){
 						if (matProd.codMaterial == mat.codigo) {
 							printf ("\t%f%s de %s\n", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
+							existe = 1;
 						}
 					}
 				}
 				fseek(Material, 0, SEEK_SET);
 			}
-			fseek(MaterialProd, 0, SEEK_SET);	
+			fseek(MaterialProd, 0, SEEK_SET);
+			printf ("\n\n");	
 		}
 	}
 	fseek(Produto, 0, SEEK_SET);
+	
+	if (existe == 0)
+		printf ("Nenhum produto cadastrado.\n");
 	
 	getch();
 	fclose (Pedido);
@@ -570,11 +573,15 @@ void ListarMateriais(FORNECEDOR fornecedor) {
 			printf(" Codigo: %d\n",mat.codigo);
 			printf(" Nome: %s\n",mat.nomeMaterial);
 			printf (" Unidade: %s\n\n", mat.unidade);
+			existe = 1;
 		}
 	}
 	fseek(Material, 0, SEEK_SET);
-	getch();
 	
+	if (existe == 0)
+		printf ("Nenhum material cadastrado.\n");
+	
+	getch();	
 	fclose (Material);
 }
 
@@ -635,19 +642,29 @@ void CadastrarMateriaisDisponiveis (FORNECEDOR fornecedor) {
 	fclose (Material);
 }
 
-MATERIAL2 *novo_material(MATERIAL2 *material,int codigoMaterial,char nomeMaterial[TAMANHO_NOME],char unidadeMaterial[TAMANHO_UNIDADE]) {
-	MATERIAL2 *temporario;
-	MATERIAL2 *novo_mat;
-	if (!novo_mat == NULL) {
-		for (temporario = material; temporario->proximo != NULL; temporario = temporario->proximo);
+NOMES *novo_nome(NOMES *nomes,char nome[TAMANHO_NOME],int p,int cod){
+	NOMES *novo = (NOMES*)malloc(sizeof(NOMES));
+	if (!novo == NULL) {
+		NOMES *ax;
+
+		if (p == 0) {
+			novo->p = nomes;
+			nomes = novo;
+			nomes->p = NULL;
+		}
+		else {
+			for (ax = nomes; ax->p != NULL; ax = ax->p);
+			
+			novo->p = ax->p;
+			ax->p = novo;
+			
+		}
+			strcpy(novo->nome,nome);
+			novo->cod = cod;			
 		
-		novo_mat->proximo = temporario->proximo;
-		temporario->proximo = novo_mat;
-		novo_mat->codigo = codigoMaterial;
-		strcpy(novo_mat->nomeMaterial,nomeMaterial);
-		strcpy(novo_mat->unidade,unidadeMaterial);
-		return material;
 	}
+
+	return nomes;
 }
 
 void Pedido(EMPRESA empresa){
@@ -662,11 +679,12 @@ void Pedido(EMPRESA empresa){
 	PEDIDO pedido;
 	PRODUTO prod;
 	MATERIAL mat;
-	MATERIAL2 mat2,temporario;
 	MATERIALPRODUTO matProd;
 	MATERIALFORNECEDOR MatFor;
+	NOMES *nomes = (NOMES*)malloc(sizeof(NOMES));
+	NOMES *t,*f;
 	char produto[TAMANHO_NOME];
-	int quantidade,existe = 0,opcao,i=0;
+	int quantidade, existe = 0, opcao, codigo, Tem = 0,teste=0;
 	
 	printf("Digite o produto desejado : ");
 	strcpy(produto,GetString(TAMANHO_NOME-1));
@@ -684,17 +702,11 @@ void Pedido(EMPRESA empresa){
 						while (fread(&mat, sizeof(MATERIAL), 1, Material)!=NULL){
 							if (matProd.codMaterial == mat.codigo) {
 								printf ("\t%f%s de %s\n", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
-								if(i==0){
-									mat2.codigo = mat.codigo;
-									strcpy(mat2.nomeMaterial, mat.nomeMaterial);
-									strcpy(mat2.unidade, mat.unidade);
-								}else{
-									mat2.proximo = novo_material(mat2.proximo,mat.codigo,mat.nomeMaterial,mat.unidade);
-								}
+								codigo = prod.codigo;
 							}
 						}
-						fseek(Material, 0, SEEK_SET);
 					}
+					fseek(Material, 0, SEEK_SET);
 				}
 				fseek(MaterialProd, 0, SEEK_SET);	
 			}
@@ -706,33 +718,64 @@ void Pedido(EMPRESA empresa){
 		printf("Produto %s nao cadastrado.\n", produto);
 		getch();
 	}else{
-		existe=0;
 		printf("\nEste produto que deseja solicitar ? (S - Sim / N - Nao)");
 		opcao = getch();
 		if(opcao=='s' || opcao=='S'){
-			pedido.codProduto == prod.codigo;
-			while (fread (&MatFor, sizeof(MATERIALFORNECEDOR), 1, MaterialFornecedor)) { 
-				for (temporario = mat2; temporario.proximo != NULL; temporario = temporario.proximo){		
-					if (stricmp (MatFor.nomeMaterial ,temporario.nomeMaterial)==0){
-						existe=1;
-					}else{
+			pedido.codProduto == codigo;
+			while (fread (&MatFor, sizeof(MATERIALFORNECEDOR), 1, MaterialFornecedor)) {
+				while (fread(&matProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)!=NULL) {
+					if (matProd.codProduto == codigo) {
+						while (fread(&mat, sizeof(MATERIAL), 1, Material)!=NULL){
+							if (matProd.codMaterial == mat.codigo) {
+								if (stricmp (MatFor.nomeMaterial, mat.nomeMaterial) == 0){
+									Tem = 1;
+									printf("\nCodigo do fornecedor - %d / NOME DO MATERIAL - %s",MatFor.codigoFornecedor,mat.nomeMaterial);
+									if(teste==0){
+										nomes = novo_nome(nomes,mat.nomeMaterial,0,MatFor.codigo);
+										teste=1;
+									}else{
+									
+										nomes = novo_nome(nomes,mat.nomeMaterial,1,MatFor.codigo);										
+									}
+								}else{
+									for (t = nomes; t != NULL; t = t->p){
+										for (f = nomes; f != NULL; f = f->p){
+//											if(stricmp(t->nome,mat.nomeMaterial)==0 ){
+//												Tem = 1 ;
+//											}else{
+//											}
+											if(stricmp(t->nome,f->nome)==0 && t->cod != f->cod){
+												printf(" \nPRODUTO %s IGUAL AO  %s",t->nome,f->nome);
+											}
+										}
+									}
+									Tem = 0;
+								
+								}
+								
+							}
+						}
+						fseek(Material, 0, SEEK_SET);
 					}
-					printf("\n\nMatFor.nomeMaterial - %s - temporario.nomeMaterial - %s \n\n",MatFor.nomeMaterial,temporario.nomeMaterial);
-					
 				}
-			} 	
-			fseek(MaterialFornecedor, 0, SEEK_SET);		
-			
-			if(existe==1){
-				printf ("Quantidade de produtos: ");
-				scanf ("%d", pedido.quantidadePedido);
+				fseek(MaterialProd, 0, SEEK_SET);
+			} 			
+			fseek(MaterialFornecedor, 0, SEEK_SET);
+			printf("\nNOMES - ");
+			for (t = nomes; t != NULL; t = t->p){
+				printf("\n\t%s - %d",t->nome,t->cod);
 				
-			}else{
-				printf("\nMaterial indisponivel\n");
+			}
+			if (Tem == 1) {
+				printf ("\n\nQuantidade de produtos: ");
+				scanf ("%d", &pedido.quantidadePedido);
+			}else {
+				printf ("\n\nMaterial(is) nao disponivel(is).");	
 			}
 		}
 	}
-		
+	
+	getch();	
 	fclose (Pedido);
 	fclose (Produto);
 	fclose (Material);
