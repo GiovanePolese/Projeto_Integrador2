@@ -60,8 +60,10 @@ typedef struct{
                    // Desta forma apenas um produto pode ter vários materiais necessários para construí-lo
                    
 typedef struct{
-	int codProduto;
+	int codMaterial;
 	int quantidadePedido;
+	int codigoEmpresa;
+	int codigoFornecedor;
 } PEDIDO;
 
 void TelaDeLogin();
@@ -73,6 +75,7 @@ void CadastrarMateriaisDisponiveis (FORNECEDOR fornecedor);
 void Pedido(EMPRESA empresa);
 void ListarProdutos(EMPRESA empresa);
 void ListarMateriais(FORNECEDOR fornecedor);
+void ListarPedidos(EMPRESA empresa);
 
 int main() {
 	char opcao;
@@ -355,6 +358,7 @@ void MenuEmpresa(EMPRESA empresa) {
 			break;
 				
 			case '4':
+				ListarPedidos(empresa);
 			break;
 								
 			default:
@@ -642,8 +646,6 @@ void CadastrarMateriaisDisponiveis (FORNECEDOR fornecedor) {
 	fclose (Material);
 }
 void Pedido(EMPRESA empresa){
-	//ler o produto
-	//Ler a Quantidade
 	system("cls");
 	FILE *Pedido = fopen("pedido.dat","ab");
 	FILE *Produto = fopen("produtos.dat","rb");
@@ -713,7 +715,10 @@ void Pedido(EMPRESA empresa){
 			fseek(MaterialFornecedor, 0, SEEK_SET);
 			if (Tem == 1) {
 				printf ("\n\nQuantidade de produtos: ");
-				scanf ("%d", &pedido.quantidadePedido);
+//				scanf ("%d", &pedido.quantidadePedido);
+//				pedido.codProduto = codigo;
+//				pedido.codigoEmpresa = empresa.codigo;
+//				fwrite (&pedido, sizeof (PEDIDO), 1, Pedido);
 			}else {
 				printf ("\n\nMaterial nao disponivel.");	
 			}
@@ -725,5 +730,28 @@ void Pedido(EMPRESA empresa){
 	fclose (Produto);
 	fclose (Material);
 	fclose (MaterialProd);
+}
+
+void ListarPedidos(EMPRESA empresa) {
+	system("cls");
+	FILE *Pedido = fopen("pedido.dat","rb");
+	PEDIDO pedido;
+	int existe = 0;
+	
+	while (fread(&pedido, sizeof(PEDIDO), 1, Pedido)!=NULL) { 
+		if (pedido.codigoEmpresa == empresa.codigo) {
+			printf(" Codigo: %d\n",pedido.);
+			printf(" Nome: %s\n",mat.nomeMaterial);
+			printf (" Unidade: %s\n\n", mat.unidade);
+			existe = 1;
+		}
+	}
+	fseek(Material, 0, SEEK_SET);
+	
+	if (existe == 0)
+		printf ("Nenhum material cadastrado.\n");
+	
+	getch();	
+	fclose (Material);
 }
 
