@@ -32,6 +32,13 @@ typedef struct {
 	char unidade[TAMANHO_UNIDADE];
 }MATERIAL;
 
+typedef struct MATERIAL2{
+	int codigo;
+	char nomeMaterial[TAMANHO_NOME];
+	char unidade[TAMANHO_UNIDADE];
+	MATERIAL2 *proximo;
+};
+
 typedef struct{
 	int codigo;
 	char nomeProduto[TAMANHO_NOME];
@@ -48,7 +55,7 @@ typedef struct{
 typedef struct{
 	int codProduto;
 	int codMaterial;
-	int QuantidadeMateriais;
+	float QuantidadeMateriais;
 } MATERIALPRODUTO; // Esta struct se refere a uma conexão entre a struct MATERIAL e a struct PRODUTO
                    // Desta forma apenas um produto pode ter vários materiais necessários para construí-lo
                    
@@ -387,6 +394,7 @@ void MenuFornecedor(FORNECEDOR fornecedor) {
 				
 			case '3':
 				ListarMateriais(fornecedor);
+				break;
 								
 			default:
 				if (opcao != 27) {
@@ -411,19 +419,20 @@ void CadastrarMateriais(int CodigoProduto){
 	strcpy(nome, GetString(TAMANHO_NOME-1));
 	
 	maior=1;
-	
 	while( fread(&DadosMaterial, sizeof(MATERIAL), 1, Material)){
-		if(stricmp( DadosMaterial.nomeMaterial, nome ) == 0 ){
-			JaExiste=1;
-		}else if(DadosMaterial.codigo >= maior){
-        	maior = DadosMaterial.codigo+1;
-		}
-	}
+  		while( fread(&MatProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)){
+   			if(stricmp( DadosMaterial.nomeMaterial, nome ) == 0 && MatProd.codProduto == CodigoProduto)
+    			JaExiste=1;
+  		}
+  		if(JaExiste==0){
+   			if(DadosMaterial.codigo >= maior)
+           		maior = DadosMaterial.codigo+1;
+  		}
+ 	}
 	fseek(Material, 0, SEEK_SET);
 	
 	if(JaExiste == 1 ){
-		printf("Material ja cadastrado!");
-		printf("\n\n");
+		printf("\nMaterial ja cadastrado!\n");
 	}else{
 		do{
 			printf("Selecione a unidade de medida: \n 1 para Kg(kilograma)\n 2 para L(litro)\n 3 para Un(unidade): ");
@@ -447,7 +456,7 @@ void CadastrarMateriais(int CodigoProduto){
 			}
 		}while(unidade==4);
 		printf("\n Digite a quantidade de %s necessario(a) para este produto : ",DadosMaterial.unidade);
-		scanf("%d",&MatProd.QuantidadeMateriais);
+		scanf("%f",&MatProd.QuantidadeMateriais);
 		
 		strcpy(DadosMaterial.nomeMaterial, nome);
 		DadosMaterial.codigo = maior;
@@ -530,7 +539,7 @@ void ListarProdutos(EMPRESA empresa) {
 				if (matProd.codProduto == prod.codigo) {
 					while (fread(&mat, sizeof(MATERIAL), 1, Material)!=NULL){
 						if (matProd.codMaterial == mat.codigo) {
-							printf ("\t%d%s de %s\n", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
+							printf ("\t%f%s de %s\n", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
 						}
 					}
 				}
@@ -630,13 +639,14 @@ void Pedido(EMPRESA empresa){
 	system("cls");
 	FILE *Pedido = fopen("pedido.dat","ab");
 	FILE *Produto = fopen("produtos.dat","rb");
-	FILE *Empresa = fopen("empresa.dat","rb");
 	FILE *Material = fopen("material.dat","rb");
 	FILE *MaterialProd = fopen("materialproduto.dat","rb");
+	FILE *MaterialFornecedor = fopen ("MaterialDoFornecedor.dat", "rb");
 	PEDIDO pedido;
 	PRODUTO prod;
 	MATERIAL mat;
 	MATERIALPRODUTO matProd;
+	MATERIALFORNECEDOR MatFor;
 	char produto[TAMANHO_NOME];
 	int quantidade,existe = 0,opcao;
 	
@@ -655,7 +665,7 @@ void Pedido(EMPRESA empresa){
 					if (matProd.codProduto == prod.codigo) {
 						while (fread(&mat, sizeof(MATERIAL), 1, Material)!=NULL){
 							if (matProd.codMaterial == mat.codigo) {
-								printf ("\t%d%s de %s\n", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
+								printf ("\t%f%s de %s\n", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
 							}
 						}
 					}
@@ -673,20 +683,19 @@ void Pedido(EMPRESA empresa){
 	}else{
 		printf("\nEste produto que deseja solicitar ? (S - Sim / N - Nao)");
 		opcao = getch();
-		do{
-			if(opcao=='s' || opcao=='S'){
-				// TODAS AS OPERAÇÕES			
-			
-			/*}else{
-				MenuEmpresa(empresa);
-			*/
-			}
-		}while(opcao!='S' && opcao !='s' && opcao !='N' && opcao !='n');
+		if(opcao=='s' || opcao=='S'){
+			pedido.codProduto == prod.codigo;
+			while (fread (&MatFor, sizeof(MATERIALFORNECEDOR), 1, MaterialFornecedor)) {
+				// Estamos aqui bbk.    
+				//if (stricmp (MatFor.nomeMaterial == )
+			} 			
+			printf ("Quantidade de produtos: ");
+			scanf ("%d", pedido.quantidadePedido);
+		}
 	}
 		
 	fclose (Pedido);
 	fclose (Produto);
-	fclose (Empresa);
 	fclose (Material);
 	fclose (MaterialProd);
 }
