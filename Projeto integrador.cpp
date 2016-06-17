@@ -355,7 +355,6 @@ void MenuEmpresa(EMPRESA empresa) {
 			break;
 				
 			case '4':
-		
 			break;
 								
 			default:
@@ -540,15 +539,20 @@ void ListarProdutos(EMPRESA empresa) {
 					while (fread(&mat, sizeof(MATERIAL), 1, Material)!=NULL){
 						if (matProd.codMaterial == mat.codigo) {
 							printf ("\t%f%s de %s\n", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
+							existe = 1;
 						}
 					}
 				}
 				fseek(Material, 0, SEEK_SET);
 			}
-			fseek(MaterialProd, 0, SEEK_SET);	
+			fseek(MaterialProd, 0, SEEK_SET);
+			printf ("\n\n");	
 		}
 	}
 	fseek(Produto, 0, SEEK_SET);
+	
+	if (existe == 0)
+		printf ("Nenhum produto cadastrado.\n");
 	
 	getch();
 	fclose (Pedido);
@@ -569,11 +573,15 @@ void ListarMateriais(FORNECEDOR fornecedor) {
 			printf(" Codigo: %d\n",mat.codigo);
 			printf(" Nome: %s\n",mat.nomeMaterial);
 			printf (" Unidade: %s\n\n", mat.unidade);
+			existe = 1;
 		}
 	}
 	fseek(Material, 0, SEEK_SET);
-	getch();
 	
+	if (existe == 0)
+		printf ("Nenhum material cadastrado.\n");
+	
+	getch();	
 	fclose (Material);
 }
 
@@ -648,7 +656,7 @@ void Pedido(EMPRESA empresa){
 	MATERIALPRODUTO matProd;
 	MATERIALFORNECEDOR MatFor;
 	char produto[TAMANHO_NOME];
-	int quantidade,existe = 0,opcao;
+	int quantidade, existe = 0, opcao, codigo, Tem = 0;
 	
 	printf("Digite o produto desejado : ");
 	strcpy(produto,GetString(TAMANHO_NOME-1));
@@ -666,6 +674,7 @@ void Pedido(EMPRESA empresa){
 						while (fread(&mat, sizeof(MATERIAL), 1, Material)!=NULL){
 							if (matProd.codMaterial == mat.codigo) {
 								printf ("\t%f%s de %s\n", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
+								codigo = prod.codigo;
 							}
 						}
 					}
@@ -684,16 +693,34 @@ void Pedido(EMPRESA empresa){
 		printf("\nEste produto que deseja solicitar ? (S - Sim / N - Nao)");
 		opcao = getch();
 		if(opcao=='s' || opcao=='S'){
-			pedido.codProduto == prod.codigo;
+			pedido.codProduto == codigo;
 			while (fread (&MatFor, sizeof(MATERIALFORNECEDOR), 1, MaterialFornecedor)) {
-				// Estamos aqui bbk.    
-				//if (stricmp (MatFor.nomeMaterial == )
+				while (fread(&matProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)!=NULL) {
+					if (matProd.codProduto == codigo) {
+						while (fread(&mat, sizeof(MATERIAL), 1, Material)!=NULL){
+							if (matProd.codMaterial == mat.codigo) {
+								if (stricmp (MatFor.nomeMaterial, mat.nomeMaterial) == 0)
+									Tem = 1;
+								else
+									Tem = 0;
+							}
+						}
+						fseek(Material, 0, SEEK_SET);
+					}
+				}
+				fseek(MaterialProd, 0, SEEK_SET);
 			} 			
-			printf ("Quantidade de produtos: ");
-			scanf ("%d", pedido.quantidadePedido);
+			fseek(MaterialFornecedor, 0, SEEK_SET);
+			if (Tem == 1) {
+				printf ("\n\nQuantidade de produtos: ");
+				scanf ("%d", &pedido.quantidadePedido);
+			}else {
+				printf ("\n\nMaterial nao disponivel.");	
+			}
 		}
 	}
-		
+	
+	getch();	
 	fclose (Pedido);
 	fclose (Produto);
 	fclose (Material);
