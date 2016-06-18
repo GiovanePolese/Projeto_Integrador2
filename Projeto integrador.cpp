@@ -2,108 +2,13 @@
 #include <conio.c>
 #include <string.h>
 #include <conio.h>
-#include <windows.h>
+#include <Windows.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include "MyInput.h" //Biblioteca exclusiva -> Funções para ler strings e senhas
 
-#define TAMANHO_SENHA 9
-#define TAMANHO_USUARIO 25
-#define TAMANHO_NOME 50
-#define TAMANHO_UNIDADE 15
-
-typedef struct {
-	int codigo;
-	char nome[TAMANHO_NOME];
-	char usuario[TAMANHO_USUARIO];
-	char senha[TAMANHO_SENHA];
-}FORNECEDOR;
-
-typedef struct {
-	int codigo;
-	char nome[TAMANHO_NOME];
-	char usuario[TAMANHO_USUARIO];
-	char senha[TAMANHO_SENHA];
-}EMPRESA;
-
-typedef struct {
-	int codigo;
-	char nomeMaterial[TAMANHO_NOME];
-	char unidade[TAMANHO_UNIDADE];
-}MATERIAL;
-
-typedef struct{
-	int codigo;
-	char nomeProduto[TAMANHO_NOME];
-	int codigoEmpresa;
-}PRODUTO;
-
-typedef struct{
-	int codigo;
-	char nomeMaterial[TAMANHO_NOME];
-	int codigoFornecedor;
-	char unidade[TAMANHO_UNIDADE];
-}MATERIALFORNECEDOR;
-
-typedef struct{
-	int codProduto;
-	int codMaterial;
-	float QuantidadeMateriais;
-} MATERIALPRODUTO; // Esta struct se refere a uma conexão entre a struct MATERIAL e a struct PRODUTO
-                   // Desta forma apenas um produto pode ter vários materiais necessários para construí-lo
-                   
-typedef struct{
-	int codProduto;
-	int quantidadePedido;
-	int codigoEmpresa;
-} PEDIDO;
-
-typedef struct nomes{
-	char nome[TAMANHO_NOME];
-	int cod;
-	struct nomes *p;
-}NOMES;
-
-void TelaDeLogin();
-void TelaCadastroLogin();
-void MenuEmpresa(EMPRESA empresa);
-void MenuFornecedor(FORNECEDOR fornecedor);
-void CadastroProdutos (EMPRESA empresa);
-void CadastrarMateriaisDisponiveis (FORNECEDOR fornecedor);
-void Pedido(EMPRESA empresa);
-void ListarProdutos(EMPRESA empresa);
-void ListarMateriais(FORNECEDOR fornecedor);
-
 int main() {
-	char opcao;
-	do {
-		system ("cls");	
-		printf ("MENU PRINCIPAL:\n\n");
-		printf ("DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA SAIR. \n");
-		printf ("1. Fazer login.\n");
-		printf ("2. Cadastrar novo usuario.\n");
-
-		opcao = getch();
-		
-		switch (opcao) {
-			case '1':	
-				printf ("\n");
-				TelaDeLogin();
-				break;
-				
-			case '2':
-				printf ("\n");
-				TelaCadastroLogin();
-				break;
-								
-			default:
-				if (opcao != 27) {
-					printf ("Opcao invalida.");
-					Sleep (500);
-				}
-				break;
-		}
-	} while (opcao != 27); // Enquanto (opcao != "ESC");
+	menu(1);
 }
 
 void TelaDeLogin() {
@@ -330,14 +235,17 @@ void MenuEmpresa(EMPRESA empresa) {
 	do {
 		system ("cls");	
 		textcolor (YELLOW);
-		printf("\t\t%s\n\n",empresa.nome);
+		printf("\t\t                                  %s\n\n",empresa.nome);
 		textcolor (WHITE);
-		printf ("MENU EMPRESA:\n\n");
-		printf ("DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL. \n");
-		printf ("1. Cadastrar Produtos.\n");
-		printf ("2. Fazer pedido.\n");
-		printf ("3. Listar produtos.\n");
-		printf ("4. Listar pedidos.\n");
+		printf ("***********************************************************************************************************************\n");
+		printf ("************************************************ MENU EMPRESA *********************************************************\n");
+		printf ("*************** DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL **********************\n");
+		printf ("***********************************************************************************************************************\n");
+		printf ("**                                          Cadastrar Produtos                                                       **\n");
+		printf ("**                                             Fazer pedido                                                          **\n");
+		printf ("**                                            Listar produtos                                                        **\n");
+		printf ("**                                             Listar pedidos                                                        **\n");
+		printf ("***********************************************************************************************************************\n");
 
 		opcao = getch();
 		
@@ -373,13 +281,17 @@ void MenuFornecedor(FORNECEDOR fornecedor) {
 	do {
 		system ("cls");	
 		textcolor (YELLOW);
-		printf("\t\t%s\n\n",fornecedor.nome);
+		printf("\t\t                                  %s\n\n",fornecedor.nome);
 		textcolor (WHITE);
-		printf ("MENU FORNECEDOR:\n\n");
-		printf ("DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL. \n");
-		printf ("1. Pedidos.\n");
-		printf ("2. Cadastrar materiais disponiveis.\n");
-		printf ("3. Listar materiais disponiveis.\n");
+		printf ("***********************************************************************************************************************\n");
+		printf ("********************************************** MENU FORNECEDOR ********************************************************\n");
+		printf ("***********************************************************************************************************************\n");
+		printf ("***************** DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL ********************\n");
+		printf ("**                                                 Pedidos                                                           **\n");
+		printf ("**                                     Cadastrar materiais disponiveis                                               **\n");
+		printf ("**                                      Listar materiais disponiveis                                                 **\n");
+		printf ("*********************************************************************************************************************** \n");
+
 
 		opcao = getch();
 		
@@ -681,10 +593,10 @@ void Pedido(EMPRESA empresa){
 	MATERIAL mat;
 	MATERIALPRODUTO matProd;
 	MATERIALFORNECEDOR MatFor;
-	NOMES *nomes = (NOMES*)malloc(sizeof(NOMES));
+	NOMES *nomes = NULL;
 	NOMES *t,*f;
 	char produto[TAMANHO_NOME];
-	int quantidade, existe = 0, opcao, codigo, Tem = 0,teste=0;
+	int quantidade, existe = 0, opcao, codigo, Tem = 0,PrimeiroMaterial=0,ContaMateriais = 0,ContaMateriaisExistentes = 0;
 	
 	printf("Digite o produto desejado : ");
 	strcpy(produto,GetString(TAMANHO_NOME-1));
@@ -703,6 +615,7 @@ void Pedido(EMPRESA empresa){
 							if (matProd.codMaterial == mat.codigo) {
 								printf ("\t%f%s de %s\n", matProd.QuantidadeMateriais, mat.unidade, mat.nomeMaterial);
 								codigo = prod.codigo;
+								ContaMateriais++;
 							}
 						}
 					}
@@ -727,31 +640,36 @@ void Pedido(EMPRESA empresa){
 					if (matProd.codProduto == codigo) {
 						while (fread(&mat, sizeof(MATERIAL), 1, Material)!=NULL){
 							if (matProd.codMaterial == mat.codigo) {
+									printf("\nCodigo do fornecedor - %d / NOME DO MATERIAL - %s",MatFor.codigoFornecedor,mat.nomeMaterial);
 								if (stricmp (MatFor.nomeMaterial, mat.nomeMaterial) == 0){
 									Tem = 1;
-									printf("\nCodigo do fornecedor - %d / NOME DO MATERIAL - %s",MatFor.codigoFornecedor,mat.nomeMaterial);
-									if(teste==0){
+									if(PrimeiroMaterial==0){
 										nomes = novo_nome(nomes,mat.nomeMaterial,0,MatFor.codigo);
-										teste=1;
+										PrimeiroMaterial=1;
 									}else{
-									
 										nomes = novo_nome(nomes,mat.nomeMaterial,1,MatFor.codigo);										
 									}
 								}else{
-									for (t = nomes; t != NULL; t = t->p){
-										for (f = nomes; f != NULL; f = f->p){
-//											if(stricmp(t->nome,mat.nomeMaterial)==0 ){
-//												Tem = 1 ;
-//											}else{
-//											}
-											if(stricmp(t->nome,f->nome)==0 && t->cod != f->cod){
-												printf(" \nPRODUTO %s IGUAL AO  %s",t->nome,f->nome);
+									
+									if(nomes!=NULL){
+									printf(" - hue -");
+										for (t = nomes; t != NULL; t = t->p){
+											for (f = nomes; f != NULL; f = f->p){
+												if(stricmp(t->nome,mat.nomeMaterial)==0 ){
+													Tem = 1 ;
+												}else{
+													
+												}
+												if(stricmp(t->nome,f->nome)==0 && t->cod != f->cod){
+													printf(" \nMATERIAL  %s IGUAL AO  %s",t->nome,f->nome);
+												}
 											}
 										}
 									}
 									Tem = 0;
 								
 								}
+									printf("\n - (  %s ) - ( %s ) - ( %s )",nomes->nome,MatFor.nomeMaterial,mat.nomeMaterial);
 								
 							}
 						}
@@ -761,15 +679,42 @@ void Pedido(EMPRESA empresa){
 				fseek(MaterialProd, 0, SEEK_SET);
 			} 			
 			fseek(MaterialFornecedor, 0, SEEK_SET);
-			printf("\nNOMES - ");
-			for (t = nomes; t != NULL; t = t->p){
-				printf("\n\t%s - %d",t->nome,t->cod);
-				
+			
+			/*
+			
+			ContaMateriais - Conta quantos materiais sao necessarios para produzir o produto
+			
+			ContaMateriaisExistentes - conta quantos materiais , do determinado produto, foram encontrados nos materiais dos fornecedores
+			
+			*/
+			
+			if(nomes!= NULL){
+				printf("\nNOMES - ");
+				for (t = nomes; t != NULL; t = t->p){
+					printf("\n\t%s - %d",t->nome,t->cod);
+					ContaMateriaisExistentes++; // Conta quantos materiais foram encontrados 
+				}
 			}
+			if(ContaMateriais == ContaMateriaisExistentes){
+				printf("\n\n Existem todos os materiais");
+				Tem = 1;
+			}else if(ContaMateriaisExistentes > ContaMateriais){
+				printf("\n\n Possui mais de um fornecedor com o(s) mesmo(s) material(is) : ");
+				Tem = 2;
+			}else{
+				Tem = 0;
+			}
+			
+			
+			
+			
+			
 			if (Tem == 1) {
 				printf ("\n\nQuantidade de produtos: ");
 				scanf ("%d", &pedido.quantidadePedido);
-			}else {
+			}else if(Tem == 2){
+				printf("Os fornecedores (tal e tal) possuem o mesmo material : ");
+			}else{
 				printf ("\n\nMaterial(is) nao disponivel(is).");	
 			}
 		}
