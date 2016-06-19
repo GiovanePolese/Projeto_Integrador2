@@ -289,6 +289,7 @@ void MenuEmpresa(EMPRESA empresa) {
 			break;
 				
 			case '4':
+				ListarPedidoEmpresa(empresa);
 			break;
 								
 			default:
@@ -600,11 +601,10 @@ NOMES *novo_nome(NOMES *nomes,char nome[TAMANHO_NOME],int p,int codFornecedor, i
 			strcpy(novo->nome,nome);
 			novo->codFornecedor = codFornecedor;
 			novo->JaFoi = 1;		
-			novo->codEmpresa;
-			novo->codMaterial;
+			novo->codEmpresa = codEmpresa;
+			novo->codMaterial = codMaterial;
 		
 	}
-
 	return nomes;
 }
 
@@ -617,20 +617,28 @@ void Pedido(EMPRESA empresa){
 	FILE *MaterialProd = fopen("materialproduto.dat","rb");
 	FILE *MaterialFornecedor = fopen ("MaterialDoFornecedor.dat", "rb");
 	FILE *Fornecedor = fopen("LoginFornecedor.dat", "rb");
+	FILE *Ped;
 	PRODUTO prod;
 	MATERIAL mat;
 	FORNECEDOR fornecedor;
 	MATERIALPRODUTO matProd;
 	MATERIALFORNECEDOR MatFor;
+	PEDIDO pedido;
 	NOMES *nomes = NULL;
 	NOMES *t,*f;
-	int quantidadePedido, CodigoFornecedor, ExisteEsse;
-
+	int quantidadePedido, CodigoFornecedor, ExisteEsse, maior = 1;
 	char produto[TAMANHO_NOME], escolha[TAMANHO_NOME];
-	int quantidade, existe = 0, opcao, codigo, Tem = 0,PrimeiroMaterial=0,ContaMateriais = 0,ContaMateriaisExistentes = 0;
+	int quantidade, existe = 0, opcao, codigo, Tem = 0,PrimeiroMaterial=0,ContaMateriais = 0,ContaMateriaisExistentes = 0, escolhaCodigo;
 	
 	printf("Digite o produto desejado : ");
 	strcpy(produto,GetString(TAMANHO_NOME-1));
+	
+	Ped = fopen ("pedido.dat", "rb");
+	while (fread (&pedido, sizeof (PEDIDO), 1, Ped)) {
+		if (pedido.codigo >= maior)
+			maior = pedido.codigo+1;
+	}
+	fclose (Ped);
 	
 	while (fread(&prod, sizeof(PRODUTO), 1, Produto)!=NULL) { 
 		if(stricmp(prod.nomeProduto, produto)==0) {
@@ -715,7 +723,7 @@ void Pedido(EMPRESA empresa){
 			if (Tem == 1) {
 				for(t = nomes; t!=NULL;t = t->p){
 					if(t->JaFoi==1){
-						FazerPedido(t->codEmpresa, t->codFornecedor, t->codMaterial, codigo, quantidadePedido);
+						FazerPedido(t->codEmpresa, t->codFornecedor, t->codMaterial, codigo, quantidadePedido, maior);
 					}
 				}
 			
@@ -735,25 +743,25 @@ void Pedido(EMPRESA empresa){
 							fseek(Fornecedor, 0, SEEK_SET);
 							 
 							do {
-								printf("\nEscreva o nome do fornecedor desejado: ");
+								printf("\n Escreva o nome do fornecedor desejado: ");
 								strcpy (escolha, GetString(TAMANHO_NOME-1));
 								ExisteEsse = 0;
 								while (fread (&fornecedor, sizeof (FORNECEDOR), 1, Fornecedor)){
 									if (t->codFornecedor == fornecedor.codigo || f->codFornecedor == fornecedor.codigo) {
 										if (stricmp(fornecedor.nome, escolha) == 0) {
 											ExisteEsse = 1;
+											escolhaCodigo = fornecedor.codigo;
 										}
 									}
 								}
 								fseek(Fornecedor, 0, SEEK_SET); 
 							} while (ExisteEsse == 0);
-							
-							FazerPedido(f->codEmpresa, fornecedor.codigo, f->codMaterial, codigo, quantidadePedido);
+							FazerPedido(f->codEmpresa, escolhaCodigo, f->codMaterial, codigo, quantidadePedido, maior);
 							
 						} else if (t->p == NULL && (stricmp (t->nome, f->nome) != 0) && f->JaFoi == 1) {
 							printf ("\n\n *%s:", f->nome);
 							printf ("\n\t- %s", fornecedor.nome);
-							FazerPedido(f->codEmpresa, fornecedor.codigo, f->codMaterial, codigo, quantidadePedido);
+							FazerPedido(f->codEmpresa, fornecedor.codigo, f->codMaterial, codigo, quantidadePedido, maior);
 						}
 					}
 				}
@@ -766,9 +774,11 @@ void Pedido(EMPRESA empresa){
 	fclose (Produto);
 	fclose (Material);
 	fclose (MaterialProd);
+	fclose (MaterialFornecedor);
+	fclose (Fornecedor);
 }
 
-void FazerPedido (int CodigoEmpresa, int CodigoFornecedor, int CodigoMaterial, int CodigoProduto, int quantidade) {
+void FazerPedido (int CodigoEmpresa, int CodigoFornecedor, int CodigoMaterial, int CodigoProduto, int quantidade, int codigo) {
 	FILE *Pedido = fopen ("pedido.dat", "ab");
 	FILE *MatProd = fopen ("materialproduto.dat", "rb");
 	PEDIDO pedido;
@@ -779,6 +789,9 @@ void FazerPedido (int CodigoEmpresa, int CodigoFornecedor, int CodigoMaterial, i
 			pedido.quantidadePedido = quantidade*matProd.QuantidadeMateriais;
 		}
 	}
+	fseek(MatProd, 0, SEEK_SET);
+	
+	pedido.codigo = codigo;
 	pedido.codigoEmpresa = CodigoEmpresa;
 	pedido.codigoFornecedor = CodigoFornecedor;
 	pedido.codMaterial = CodigoMaterial;
@@ -789,12 +802,54 @@ void FazerPedido (int CodigoEmpresa, int CodigoFornecedor, int CodigoMaterial, i
 }
 
 void ListarPedidoEmpresa(EMPRESA empresa){
+	system ("cls");
+	
 	FILE *Pedido = fopen ("pedido.dat", "rb");
+	FILE *Produto = fopen("produtos.dat","rb");
+	FILE *Material = fopen("material.dat","rb");
+	FILE *MaterialProd = fopen("materialproduto.dat","rb");
+	FILE *MaterialFornecedor = fopen ("MaterialDoFornecedor.dat", "rb");
+	FILE *Fornecedor = fopen("LoginFornecedor.dat", "rb");
 	PEDIDO pedido;
+	PRODUTO produto;
+	MATERIAL material;
+	MATERIALPRODUTO MatProd;
+	FORNECEDOR fornecedor;
+	int codigoAnterior = 0;
 	
 	while (fread (&pedido, sizeof (PEDIDO), 1, Pedido)) {
-		
+		if (pedido.codigoEmpresa == empresa.codigo) {
+			while (fread (&produto, sizeof (PRODUTO), 1, Produto)) {
+				if (pedido.codProduto == produto.codigo) {
+					if (codigoAnterior != pedido.codigo) {
+						printf ("-----------------------------------------------------------------------");
+						printf ("\nPRODUTO: %s", produto.nomeProduto);
+						printf ("\nMATERIAIS: ");
+					}
+					while (fread (&material, sizeof (MATERIAL), 1, Material)) {
+						if (pedido.codMaterial == material.codigo) {
+							while (fread (&MatProd, sizeof (MATERIALPRODUTO), 1, MaterialProd)) {
+								if (MatProd.codMaterial == material.codigo && MatProd.codProduto == produto.codigo) {
+									while (fread (&fornecedor, sizeof (FORNECEDOR), 1, Fornecedor)) {
+										if (pedido.codigoFornecedor == fornecedor.codigo) {
+											printf ("\n\t*%d%s de %s - Enviado para %s\n", pedido.quantidadePedido, material.unidade, material.nomeMaterial, fornecedor.nome);
+										}
+									}
+									fseek(Fornecedor, 0, SEEK_SET);
+								}
+							}
+							fseek(MaterialProd, 0, SEEK_SET);
+						}
+					}
+					fseek(Material, 0, SEEK_SET);
+				}
+			}
+			fseek(Produto, 0, SEEK_SET);	
+		}
+		codigoAnterior = pedido.codigo;
 	}
+	fseek(Pedido, 0, SEEK_SET);
+	getch();
 	/*
 		PRODUTO: "produto"
 		MATERIAIS:
@@ -814,6 +869,11 @@ void ListarPedidoEmpresa(EMPRESA empresa){
 //	pedido.codProduto
 	
 	fclose (Pedido);
+	fclose (Produto);
+	fclose (Material);
+	fclose (MaterialProd);
+	fclose (MaterialFornecedor);
+	fclose (Fornecedor);
 }
 
 //void ListarPedidoFornecedor(EMPRESA empresa){

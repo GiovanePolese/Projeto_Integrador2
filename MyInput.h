@@ -63,6 +63,7 @@ typedef struct{
                    // Desta forma apenas um produto pode ter vários materiais necessários para construí-lo
                    
 typedef struct{
+	int codigo;
 	int codProduto;
 	int codMaterial;
 	int quantidadePedido;
@@ -91,7 +92,8 @@ void CadastrarMateriaisDisponiveis (FORNECEDOR fornecedor);
 void Pedido(EMPRESA empresa);
 void ListarProdutos(EMPRESA empresa);
 void ListarMateriais(FORNECEDOR fornecedor);
-void FazerPedido (int CodigoEmpresa, int CodigoFornecedor, int CodigoMaterial, int CodigoProduto, int quantidade);
+void FazerPedido (int CodigoEmpresa, int CodigoFornecedor, int CodigoMaterial, int CodigoProduto, int quantidade, int codigo);
+void ListarPedidoEmpresa(EMPRESA empresa);
 
 // Needs the argument MaxSize, which is the maximum size of the password
 // Returns the string password
