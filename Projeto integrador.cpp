@@ -323,7 +323,8 @@ void MenuFornecedor(FORNECEDOR fornecedor) {
 		opcao = getch();
 		
 		switch (opcao) {
-			case '1':	
+			case '1':
+				ListarPedidoFornecedor(fornecedor);	
 				break;
 				
 			case '2':
@@ -711,7 +712,6 @@ void Pedido(EMPRESA empresa){
 				}
 			}
 			if(ContaMateriais == ContaMateriaisExistentes){
-				printf("\n\n Existem todos os materiais");
 				Tem = 1;
 			}else if(ContaMateriaisExistentes > ContaMateriais){
 				printf("\n\n Possuem em mais de um fornecedor: ");
@@ -822,7 +822,7 @@ void ListarPedidoEmpresa(EMPRESA empresa){
 			while (fread (&produto, sizeof (PRODUTO), 1, Produto)) {
 				if (pedido.codProduto == produto.codigo) {
 					if (codigoAnterior != pedido.codigo) {
-						printf ("-----------------------------------------------------------------------");
+						printf ("---------------------------------------------------------------------------");
 						printf ("\nPRODUTO: %s", produto.nomeProduto);
 						printf ("\nMATERIAIS: ");
 					}
@@ -850,23 +850,6 @@ void ListarPedidoEmpresa(EMPRESA empresa){
 	}
 	fseek(Pedido, 0, SEEK_SET);
 	getch();
-	/*
-		PRODUTO: "produto"
-		MATERIAIS:
-			*500Kg de "material" - Enviado para "fornecedor"
-			
-			*100Un de "material" - Enviado para "fornecedor"
-			
-			*10L de "material" - Enviado para "fornecedor"
-		.
-		.
-		.
-	*/
-//	pedido.quantidadePedido
-//	pedido.codigoEmpresa
-//	pedido.codigoFornecedor
-//	pedido.codMaterial
-//	pedido.codProduto
 	
 	fclose (Pedido);
 	fclose (Produto);
@@ -876,7 +859,61 @@ void ListarPedidoEmpresa(EMPRESA empresa){
 	fclose (Fornecedor);
 }
 
-//void ListarPedidoFornecedor(EMPRESA empresa){
-//	
-//}
+void ListarPedidoFornecedor(FORNECEDOR fornecedor){
+	system ("cls");
+	
+	FILE *Pedido = fopen ("pedido.dat", "rb");
+	FILE *Produto = fopen("produtos.dat","rb");
+	FILE *Material = fopen("material.dat","rb");
+	FILE *MaterialProd = fopen("materialproduto.dat","rb");
+	FILE *MaterialFornecedor = fopen ("MaterialDoFornecedor.dat", "rb");
+	FILE *Empresa = fopen("LoginEmpresa.dat", "rb");
+	PEDIDO pedido;
+	PRODUTO produto;
+	MATERIAL material;
+	MATERIALPRODUTO MatProd;
+	EMPRESA empresa;
+	int codigoAnterior = 0;
+	
+	while (fread (&pedido, sizeof (PEDIDO), 1, Pedido)) {
+		if (pedido.codigoFornecedor == fornecedor.codigo) {
+			while (fread (&produto, sizeof (PRODUTO), 1, Produto)) {
+				if (pedido.codProduto == produto.codigo) {
+					if (codigoAnterior != pedido.codigo) {
+						printf ("---------------------------------------------------------------------------");
+						printf ("\nPRODUTO: %s", produto.nomeProduto);
+						printf ("\nMATERIAIS: ");
+					}
+					while (fread (&material, sizeof (MATERIAL), 1, Material)) {
+						if (pedido.codMaterial == material.codigo) {
+							while (fread (&MatProd, sizeof (MATERIALPRODUTO), 1, MaterialProd)) {
+								if (MatProd.codMaterial == material.codigo && MatProd.codProduto == produto.codigo) {
+									while (fread (&empresa, sizeof (EMPRESA), 1, Empresa)) {
+										if (pedido.codigoEmpresa == empresa.codigo) {
+											printf ("\n\t*%d%s de %s - Solicitado por %s\n", pedido.quantidadePedido, material.unidade, material.nomeMaterial, empresa.nome);
+										}
+									}
+									fseek(Empresa, 0, SEEK_SET);
+								}
+							}
+							fseek(MaterialProd, 0, SEEK_SET);
+						}
+					}
+					fseek(Material, 0, SEEK_SET);
+				}
+			}
+			fseek(Produto, 0, SEEK_SET);	
+		}
+		codigoAnterior = pedido.codigo;
+	}
+	fseek(Pedido, 0, SEEK_SET);
+	getch();
+	
+	fclose (Pedido);
+	fclose (Produto);
+	fclose (Material);
+	fclose (MaterialProd);
+	fclose (MaterialFornecedor);
+	fclose (Empresa);
+}
 

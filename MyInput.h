@@ -94,6 +94,7 @@ void ListarProdutos(EMPRESA empresa);
 void ListarMateriais(FORNECEDOR fornecedor);
 void FazerPedido (int CodigoEmpresa, int CodigoFornecedor, int CodigoMaterial, int CodigoProduto, int quantidade, int codigo);
 void ListarPedidoEmpresa(EMPRESA empresa);
+void ListarPedidoFornecedor(FORNECEDOR fornecedor);
 
 // Needs the argument MaxSize, which is the maximum size of the password
 // Returns the string password
