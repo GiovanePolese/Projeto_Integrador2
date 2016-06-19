@@ -916,4 +916,3 @@ void ListarPedidoFornecedor(FORNECEDOR fornecedor){
 	fclose (MaterialFornecedor);
 	fclose (Empresa);
 }
-
