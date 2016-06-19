@@ -3,24 +3,19 @@
 //8 == ASCII code for "BACKSPACE"
 
 #include <stdio.h>
-#include <string.h>
 #include <conio.h>
-#include <windows.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <time.h>
-#include <locale.h>
+#include <Windows.h>
 
 #define TAMANHO_SENHA 9
 #define TAMANHO_USUARIO 25
 #define TAMANHO_NOME 50
 #define TAMANHO_UNIDADE 15
 
-#define MOVE_UP 38
+#define MOVE_UP 72
 #define MOVE_DOWN 80
-#define MOVE_RIGHT 77
 #define ESC 27
 #define ENTER 13
+#define CURSOR 175
 
 typedef struct {
 	int codigo;
@@ -78,8 +73,8 @@ typedef struct nomes{
 
 void TelaDeLogin();
 void TelaCadastroLogin();
-void MenuEmpresa(EMPRESA empresa);
-void MenuFornecedor(FORNECEDOR fornecedor);
+void MenuEmpresa(EMPRESA empresa,FORNECEDOR fornecedor);
+void MenuFornecedor(FORNECEDOR fornecedor,EMPRESA empresa);
 void CadastroProdutos (EMPRESA empresa);
 void CadastrarMateriaisDisponiveis (FORNECEDOR fornecedor);
 void Pedido(EMPRESA empresa);
@@ -156,7 +151,7 @@ char *GetString (int MaxSize) {
 	return string;
 }
 
-void menu(int id){
+void menu(int id,EMPRESA empresa, FORNECEDOR fornecedor){
 	COORD cr;
 	char ch;
 		 
@@ -171,44 +166,136 @@ void menu(int id){
 			printf ("***********************************************************************************************************************\n\n");
 			printf ("------------------------ SELECIONE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA SAIR ----------------------------\n");
 			printf (" \n");
-			printf ("**                                           Fazer login                                                             **\n");
+			printf ("**                  %c                         Fazer login                                                            **\n",CURSOR);
 			printf ("**                                      Cadastrar novo usuario                                                       **\n");
-			do {
-				if (kbhit()){
-					ch = getch(); 
-					printf("%c",ch);
-					switch (ch){
+			do{
+				if(kbhit()){
+					ch = getch();
+					fflush(stdin);
+					switch(ch){
 						case MOVE_UP:
-							printf("PRA CIMA PORRAAAAAAAAAAAAAAAA");
+							if(cr.Y>6){
+								cursor(cr,' ');
+								cr.Y--;
+								cursor(cr,CURSOR);
+							}
+						break;
+						
+						case MOVE_DOWN:
+							if(cr.Y<7){
+								cursor(cr,' ');
+								cr.Y++;
+								cursor(cr,CURSOR);
+							}
+						break;
+						case ENTER:
+							if(cr.Y==6){
+								cr.X = 0;
+								cr.Y = 9;
+								cursor(cr,' ');
+								TelaDeLogin();
+							}else if(cr.Y == 7){
+								TelaCadastroLogin();
+								cr.X = 0;
+								cr.Y = 9;
+								cursor(cr,' ');
+							}
 						break;
 					}
 				}
 			}while(ch!=ESC);
-			
-//			switch (ch) {
-//				case '1':	
-//					printf ("\n");
-//					TelaDeLogin();
-//					break;
-//					
-//				case '2':
-//					printf ("\n");
-//					TelaCadastroLogin();
-//					break;
-//									
-//				default:
-//					if (ch != 27) {
-//						printf ("Opcao invalida.");
-//						Sleep (500);
-//					}
-//					break;
-//			}
 		break;
 		case 2:
-		
+			cr.X = 20;
+			cr.Y = 6;
+
+			printf ("***********************************************************************************************************************\n");
+			printf ("************************************************ MENU EMPRESA *********************************************************\n");
+			printf ("*************** DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL **********************\n");
+			printf ("***********************************************************************************************************************\n");
+			printf ("**                                          Cadastrar Produtos                                                       **\n");
+			printf ("**                                             Fazer pedido                                                          **\n");
+			printf ("**                                            Listar produtos                                                        **\n");
+			printf ("**                                             Listar pedidos                                                        **\n");
+			printf ("***********************************************************************************************************************\n");
+
+			do{
+				if(kbhit()){
+					ch = getch();
+					fflush(stdin);
+					switch(ch){
+						case MOVE_UP:
+							if(cr.Y>6){
+								cursor(cr,' ');
+								cr.Y--;
+								cursor(cr,CURSOR);
+							}
+						break;
+						
+						case MOVE_DOWN:
+							if(cr.Y<8){
+								cursor(cr,' ');
+								cr.Y++;
+								cursor(cr,CURSOR);
+							}
+						break;
+						case ENTER:
+							if(cr.Y==5){
+								CadastroProdutos(empresa);
+							}else if(cr.Y == 6){
+								Pedido(empresa);
+							}else if(cr.Y == 7){
+								ListarProdutos(empresa);
+							}
+						break;
+					}
+				}
+			}while(ch!=ESC);
 		break;
 		case 3:
-		
+			cr.X = 20;
+			cr.Y = 5;	
+			printf ("***********************************************************************************************************************\n");
+			printf ("********************************************** MENU FORNECEDOR ********************************************************\n");
+			printf ("***********************************************************************************************************************\n");
+			printf ("***************** DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL ********************\n");
+			printf ("**                                                 Pedidos                                                           **\n");
+			printf ("**                                     Cadastrar materiais disponiveis                                               **\n");
+			printf ("**                                      Listar materiais disponiveis                                                 **\n");
+			printf ("*********************************************************************************************************************** \n");
+
+			do{
+				if(kbhit()){
+					ch = getch();
+					fflush(stdin);
+					switch(ch){
+						case MOVE_UP:
+							if(cr.Y>5){
+								cursor(cr,' ');
+								cr.Y--;
+								cursor(cr,CURSOR);
+							}
+						break;
+						
+						case MOVE_DOWN:
+							if(cr.Y<7){
+								cursor(cr,' ');
+								cr.Y++;
+								cursor(cr,CURSOR);
+							}
+						break;
+						case ENTER:
+							if(cr.Y==5){
+								CadastroProdutos(empresa);
+							}else if(cr.Y == 6){
+								Pedido(empresa);
+							}else if(cr.Y == 7){
+								ListarProdutos(empresa);
+							}
+						break;
+					}
+				}
+			}while(ch!=ESC);
 		break;
 	}
 }

@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <conio.c>
 #include <string.h>
 #include <conio.h>
 #include <Windows.h>
@@ -8,7 +7,9 @@
 #include "MyInput.h" //Biblioteca exclusiva -> Funções para ler strings e senhas
 
 int main() {
-	menu(1);
+	EMPRESA empresa;
+	FORNECEDOR fornecedor;
+	menu(1,empresa,fornecedor);
 }
 
 void TelaDeLogin() {
@@ -53,19 +54,20 @@ void TelaDeLogin() {
 		fclose(LoginEmpresa);
 	    fclose(LoginFornecedor);
 		getch();
+		menu(1,empresa,fornecedor);
 	}
 	else if (strcmp (senha, SenhaCorreta) == 0) { // Senao se SenhaCorreta == senha digitada executa o menu respectivo à seu tipo
 		if (Tipo == 1) {
 			fclose(LoginEmpresa);
 			empresa.codigo = Codigo;
 			strcpy(empresa.nome,nome);
-			MenuEmpresa(empresa);
+			MenuEmpresa(empresa,fornecedor);
 		}
 		else if (Tipo = 2) {
 			fclose(LoginFornecedor);
 			fornecedor.codigo = Codigo;
 			strcpy(fornecedor.nome,nome);
-			MenuFornecedor(fornecedor);
+			MenuFornecedor(fornecedor,empresa);
 		}
 	}
 	else {                // Senao significa que a senha digitada e a SenhaCorreta não correspondem
@@ -73,6 +75,7 @@ void TelaDeLogin() {
 	    fclose(LoginEmpresa);
 	    fclose(LoginFornecedor);
 		getch();
+		menu(1,empresa,fornecedor);
 	}
 }
 
@@ -229,92 +232,18 @@ void TelaCadastroLogin() {
     system("pause");
 }
 
-void MenuEmpresa(EMPRESA empresa) {
+void MenuEmpresa(EMPRESA empresa,FORNECEDOR fornecedor) {
 	char opcao;
-	
-	do {
 		system ("cls");	
-		textcolor (YELLOW);
 		printf("\t\t                                  %s\n\n",empresa.nome);
-		textcolor (WHITE);
-		printf ("***********************************************************************************************************************\n");
-		printf ("************************************************ MENU EMPRESA *********************************************************\n");
-		printf ("*************** DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL **********************\n");
-		printf ("***********************************************************************************************************************\n");
-		printf ("**                                          Cadastrar Produtos                                                       **\n");
-		printf ("**                                             Fazer pedido                                                          **\n");
-		printf ("**                                            Listar produtos                                                        **\n");
-		printf ("**                                             Listar pedidos                                                        **\n");
-		printf ("***********************************************************************************************************************\n");
-
-		opcao = getch();
-		
-		switch (opcao) {
-			case '1':
-				CadastroProdutos(empresa);
-			break;
-				
-			case '2':
-				Pedido(empresa);
-			break;
-			
-			case '3':
-				ListarProdutos(empresa);
-			break;
-				
-			case '4':
-			break;
-								
-			default:
-				if (opcao != 27) {
-					printf ("Opcao invalida.");
-					Sleep (500);
-				}
-				break;
-		}
-	} while (opcao != 27);
+		menu(2,empresa,fornecedor);
 }
 
-void MenuFornecedor(FORNECEDOR fornecedor) {
+void MenuFornecedor(FORNECEDOR fornecedor,EMPRESA empresa) {
 	char opcao;
-	
-	do {
-		system ("cls");	
-		textcolor (YELLOW);
+		system("cls");
 		printf("\t\t                                  %s\n\n",fornecedor.nome);
-		textcolor (WHITE);
-		printf ("***********************************************************************************************************************\n");
-		printf ("********************************************** MENU FORNECEDOR ********************************************************\n");
-		printf ("***********************************************************************************************************************\n");
-		printf ("***************** DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL ********************\n");
-		printf ("**                                                 Pedidos                                                           **\n");
-		printf ("**                                     Cadastrar materiais disponiveis                                               **\n");
-		printf ("**                                      Listar materiais disponiveis                                                 **\n");
-		printf ("*********************************************************************************************************************** \n");
-
-
-		opcao = getch();
-		
-		switch (opcao) {
-			case '1':	
-				break;
-				
-			case '2':
-				CadastrarMateriaisDisponiveis (fornecedor);	
-				break;
-				
-			case '3':
-				ListarMateriais(fornecedor);
-				break;
-								
-			default:
-				if (opcao != 27) {
-					printf ("Opcao invalida.");
-					Sleep (500);
-				}
-				break;
-		}
-	} while (opcao != 27);
+		menu(3,empresa,fornecedor);
 }
 void CadastrarMateriais(int CodigoProduto){
 	FILE *Material = fopen("material.dat","ab+");
@@ -640,7 +569,7 @@ void Pedido(EMPRESA empresa){
 					if (matProd.codProduto == codigo) {
 						while (fread(&mat, sizeof(MATERIAL), 1, Material)!=NULL){
 							if (matProd.codMaterial == mat.codigo) {
-									printf("\nCodigo do fornecedor - %d / NOME DO MATERIAL - %s",MatFor.codigoFornecedor,mat.nomeMaterial);
+								printf("\nCodigo do fornecedor - %d / NOME DO MATERIAL - %s",MatFor.codigoFornecedor,mat.nomeMaterial);
 								if (stricmp (MatFor.nomeMaterial, mat.nomeMaterial) == 0){
 									Tem = 1;
 									if(PrimeiroMaterial==0){
@@ -655,11 +584,6 @@ void Pedido(EMPRESA empresa){
 									printf(" - hue -");
 										for (t = nomes; t != NULL; t = t->p){
 											for (f = nomes; f != NULL; f = f->p){
-												if(stricmp(t->nome,mat.nomeMaterial)==0 ){
-													Tem = 1 ;
-												}else{
-													
-												}
 												if(stricmp(t->nome,f->nome)==0 && t->cod != f->cod){
 													printf(" \nMATERIAL  %s IGUAL AO  %s",t->nome,f->nome);
 												}
