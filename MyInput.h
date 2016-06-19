@@ -72,7 +72,10 @@ typedef struct{
 
 typedef struct nomes{
 	char nome[TAMANHO_NOME];
-	int cod;
+	int codFornecedor;
+	int codEmpresa;
+	int codMaterial;
+	int QuantidadeDoMaterial;
 	int JaFoi = 1;
 	struct nomes *p;
 }NOMES;
@@ -88,6 +91,7 @@ void CadastrarMateriaisDisponiveis (FORNECEDOR fornecedor);
 void Pedido(EMPRESA empresa);
 void ListarProdutos(EMPRESA empresa);
 void ListarMateriais(FORNECEDOR fornecedor);
+void FazerPedido (int CodigoEmpresa, int CodigoFornecedor, int CodigoMaterial, int CodigoProduto, int quantidade);
 
 // Needs the argument MaxSize, which is the maximum size of the password
 // Returns the string password

@@ -580,7 +580,7 @@ void CadastrarMateriaisDisponiveis (FORNECEDOR fornecedor) {
 	fclose (Material);
 }
 
-NOMES *novo_nome(NOMES *nomes,char nome[TAMANHO_NOME],int p,int cod){
+NOMES *novo_nome(NOMES *nomes,char nome[TAMANHO_NOME],int p,int codFornecedor, int codEmpresa, int codMaterial){
 	NOMES *novo = (NOMES*)malloc(sizeof(NOMES));
 	if (!novo == NULL) {
 		NOMES *ax;
@@ -598,8 +598,10 @@ NOMES *novo_nome(NOMES *nomes,char nome[TAMANHO_NOME],int p,int cod){
 			
 		}
 			strcpy(novo->nome,nome);
-			novo->cod = cod;
-			novo->JaFoi = 1;			
+			novo->codFornecedor = codFornecedor;
+			novo->JaFoi = 1;		
+			novo->codEmpresa;
+			novo->codMaterial;
 		
 	}
 
@@ -610,13 +612,11 @@ void Pedido(EMPRESA empresa){
 	//ler o produto
 	//Ler a Quantidade
 	system("cls");
-	FILE *Pedido = fopen("pedido.dat","ab");
 	FILE *Produto = fopen("produtos.dat","rb");
 	FILE *Material = fopen("material.dat","rb");
 	FILE *MaterialProd = fopen("materialproduto.dat","rb");
 	FILE *MaterialFornecedor = fopen ("MaterialDoFornecedor.dat", "rb");
 	FILE *Fornecedor = fopen("LoginFornecedor.dat", "rb");
-	PEDIDO pedido;
 	PRODUTO prod;
 	MATERIAL mat;
 	FORNECEDOR fornecedor;
@@ -624,6 +624,7 @@ void Pedido(EMPRESA empresa){
 	MATERIALFORNECEDOR MatFor;
 	NOMES *nomes = NULL;
 	NOMES *t,*f;
+	int quantidadePedido, CodigoFornecedor, ExisteEsse;
 
 	char produto[TAMANHO_NOME], escolha[TAMANHO_NOME];
 	int quantidade, existe = 0, opcao, codigo, Tem = 0,PrimeiroMaterial=0,ContaMateriais = 0,ContaMateriaisExistentes = 0;
@@ -664,7 +665,8 @@ void Pedido(EMPRESA empresa){
 		printf("\nEste produto que deseja solicitar ? (S - Sim / N - Nao)");
 		opcao = getch();
 		if(opcao=='s' || opcao=='S'){
-			pedido.codProduto == codigo;
+			printf ("\n\nQuantidade de produtos: ");
+			scanf ("%d", &quantidadePedido);
 			while (fread (&MatFor, sizeof(MATERIALFORNECEDOR), 1, MaterialFornecedor)) {
 				while (fread(&matProd, sizeof(MATERIALPRODUTO), 1, MaterialProd)!=NULL) {
 					if (matProd.codProduto == codigo) {
@@ -672,10 +674,10 @@ void Pedido(EMPRESA empresa){
 							if (matProd.codMaterial == mat.codigo) {
 								if (stricmp (MatFor.nomeMaterial, mat.nomeMaterial) == 0){
 									if(PrimeiroMaterial==0){
-										nomes = novo_nome(nomes,mat.nomeMaterial,0,MatFor.codigoFornecedor);
+										nomes = novo_nome(nomes,mat.nomeMaterial,0,MatFor.codigoFornecedor, empresa.codigo, mat.codigo);
 										PrimeiroMaterial=1;
 									}else{
-										nomes = novo_nome(nomes,mat.nomeMaterial,1,MatFor.codigoFornecedor);										
+										nomes = novo_nome(nomes,mat.nomeMaterial,1,MatFor.codigoFornecedor, empresa.codigo, mat.codigo);										
 									}
 								}								
 							}
@@ -711,44 +713,110 @@ void Pedido(EMPRESA empresa){
 			}
 			
 			if (Tem == 1) {
-				printf ("\n\nQuantidade de produtos: ");
-				/*FazerPedido ();
-				scanf ("%d", &pedido.quantidadePedido);
-				pedido.codigoEmpresa = empresa.codigo;
-				pedido.codigoFornecedor = fornecedor.codigo;
-				pedido.codMaterial = ;
-				pedido.codProduto = ;    --> fodeo msm, foda-se
-				*/
+				for(t = nomes; t!=NULL;t = t->p){
+					if(t->JaFoi==1){
+						FazerPedido(t->codEmpresa, t->codFornecedor, t->codMaterial, codigo, quantidadePedido);
+					}
+				}
+			
 			}else if(Tem == 2){
 				printf(" \n\n MATERIAIS:");
 				for (t = nomes; t != NULL; t = t->p){
 					for (f = nomes; f != NULL; f = f->p){
-						if(stricmp(t->nome,f->nome)==0 && t->cod != f->cod && t->JaFoi == 1){
+						if(stricmp(t->nome,f->nome)==0 && t->codFornecedor != f->codFornecedor && t->JaFoi == 1){
 							printf(" \n\n *%s:", t->nome);
-							t->JaFoi = 0;
-							f->JaFoi = 0;
 							while (fread (&fornecedor, sizeof (FORNECEDOR), 1, Fornecedor)){
-								if (t->cod == fornecedor.codigo || f->cod == fornecedor.codigo) {
+								if (t->codFornecedor == fornecedor.codigo || f->codFornecedor == fornecedor.codigo) {
 									printf ("\n\t- %s", fornecedor.nome);
+									t->JaFoi = 0;
+									f->JaFoi = 0;
 								}
 							}
-							fseek(Fornecedor, 0, SEEK_SET); 
-							printf("\nEscreva o nome do fornecedor desejado: ");
-							strcpy (escolha, GetString(TAMANHO_NOME-1));
+							fseek(Fornecedor, 0, SEEK_SET);
+							 
+							do {
+								printf("\nEscreva o nome do fornecedor desejado: ");
+								strcpy (escolha, GetString(TAMANHO_NOME-1));
+								ExisteEsse = 0;
+								while (fread (&fornecedor, sizeof (FORNECEDOR), 1, Fornecedor)){
+									if (t->codFornecedor == fornecedor.codigo || f->codFornecedor == fornecedor.codigo) {
+										if (stricmp(fornecedor.nome, escolha) == 0) {
+											ExisteEsse = 1;
+										}
+									}
+								}
+								fseek(Fornecedor, 0, SEEK_SET); 
+							} while (ExisteEsse == 0);
+							
+							FazerPedido(f->codEmpresa, fornecedor.codigo, f->codMaterial, codigo, quantidadePedido);
+							
+						} else if (t->p == NULL && (stricmp (t->nome, f->nome) != 0) && f->JaFoi == 1) {
+							printf ("\n\n *%s:", f->nome);
+							printf ("\n\t- %s", fornecedor.nome);
+							FazerPedido(f->codEmpresa, fornecedor.codigo, f->codMaterial, codigo, quantidadePedido);
 						}
 					}
 				}
-				printf ("\n\nQuantidade de produtos: ");
-				scanf ("%d", &pedido.quantidadePedido);
 			}else{
 				printf ("\n\nMaterial(is) nao disponivel(is).");	
 			}
 		}
 	}
 	getch();	
-	fclose (Pedido);
 	fclose (Produto);
 	fclose (Material);
 	fclose (MaterialProd);
 }
+
+void FazerPedido (int CodigoEmpresa, int CodigoFornecedor, int CodigoMaterial, int CodigoProduto, int quantidade) {
+	FILE *Pedido = fopen ("pedido.dat", "ab");
+	FILE *MatProd = fopen ("materialproduto.dat", "rb");
+	PEDIDO pedido;
+	MATERIALPRODUTO matProd;
+	
+	while (fread (&matProd, sizeof (MATERIALPRODUTO), 1, MatProd)) {
+		if (CodigoMaterial == matProd.codMaterial) {
+			pedido.quantidadePedido = quantidade*matProd.QuantidadeMateriais;
+		}
+	}
+	pedido.codigoEmpresa = CodigoEmpresa;
+	pedido.codigoFornecedor = CodigoFornecedor;
+	pedido.codMaterial = CodigoMaterial;
+	pedido.codProduto = CodigoProduto;
+	
+	fwrite (&pedido, sizeof (PEDIDO), 1, Pedido);
+	fclose (Pedido);
+}
+
+void ListarPedidoEmpresa(EMPRESA empresa){
+	FILE *Pedido = fopen ("pedido.dat", "rb");
+	PEDIDO pedido;
+	
+	while (fread (&pedido, sizeof (PEDIDO), 1, Pedido)) {
+		
+	}
+	/*
+		PRODUTO: "produto"
+		MATERIAIS:
+			*500Kg de "material" - Enviado para "fornecedor"
+			
+			*100Un de "material" - Enviado para "fornecedor"
+			
+			*10L de "material" - Enviado para "fornecedor"
+		.
+		.
+		.
+	*/
+//	pedido.quantidadePedido
+//	pedido.codigoEmpresa
+//	pedido.codigoFornecedor
+//	pedido.codMaterial
+//	pedido.codProduto
+	
+	fclose (Pedido);
+}
+
+//void ListarPedidoFornecedor(EMPRESA empresa){
+//	
+//}
 
