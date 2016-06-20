@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <conio.c>
 #include <string.h>
 #include <conio.h>
 #include <Windows.h>
@@ -12,7 +11,7 @@ int main() {
 	int PrimeiraVez = 0;
 	do {
 		if (PrimeiraVez == 0) {
-			Logo();
+			//Logo();
 			PrimeiraVez = 1;
 		}
 		system ("cls");	
@@ -21,8 +20,8 @@ int main() {
 		printf ("***********************************************************************************************************************\n");
 		printf ("------------------------ SELECIONE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA SAIR -----------------------------\n");
 		printf (" \n");
-		printf ("**                                           Fazer login                                                             **\n");
-		printf ("**                                      Cadastrar novo usuario                                                       **\n");
+		printf ("**                                           1.Fazer login                                                             **\n");
+		printf ("**                                      2.Cadastrar novo usuario                                                       **\n");
 
 		opcao = getch();
 		
@@ -265,17 +264,15 @@ void MenuEmpresa(EMPRESA empresa) {
 	
 	do {
 		system ("cls");	
-		textcolor (YELLOW);
 		printf("\t\t                                  %s\n\n",empresa.nome);
-		textcolor (WHITE);
 		printf ("***********************************************************************************************************************\n");
 		printf ("************************************************ MENU EMPRESA *********************************************************\n");
 		printf ("*************** DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL **********************\n");
 		printf ("***********************************************************************************************************************\n");
-		printf ("**                                          Cadastrar Produtos                                                       **\n");
-		printf ("**                                             Fazer pedido                                                          **\n");
-		printf ("**                                            Listar produtos                                                        **\n");
-		printf ("**                                             Listar pedidos                                                        **\n");
+		printf ("**                                           1.Cadastrar Produtos                                                    **\n");
+		printf ("**                                             2.Fazer pedido                                                        **\n");
+		printf ("**                                            3.Listar produtos                                                      **\n");
+		printf ("**                                           4.Listar pedidos                                                        **\n");
 		printf ("***********************************************************************************************************************\n");
 
 		opcao = getch();
@@ -312,16 +309,14 @@ void MenuFornecedor(FORNECEDOR fornecedor) {
 	
 	do {
 		system ("cls");	
-		textcolor (YELLOW);
 		printf("\t\t                                  %s\n\n",fornecedor.nome);
-		textcolor (WHITE);
 		printf ("***********************************************************************************************************************\n");
 		printf ("********************************************** MENU FORNECEDOR ********************************************************\n");
 		printf ("***********************************************************************************************************************\n");
 		printf ("***************** DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL ********************\n");
-		printf ("**                                                 Pedidos                                                           **\n");
-		printf ("**                                     Cadastrar materiais disponiveis                                               **\n");
-		printf ("**                                      Listar materiais disponiveis                                                 **\n");
+		printf ("**                                               1.Pedidos                                                           **\n");
+		printf ("**                                   2.Cadastrar materiais disponiveis                                               **\n");
+		printf ("**                                    3.Listar materiais disponiveis                                                 **\n");
 		printf ("*********************************************************************************************************************** \n");
 
 
@@ -517,7 +512,8 @@ void ListarMateriais(FORNECEDOR fornecedor) {
 		if (mat.codigoFornecedor == fornecedor.codigo) {
 			printf(" Codigo: %d\n",mat.codigo);
 			printf(" Nome: %s\n",mat.nomeMaterial);
-			printf (" Unidade: %s\n\n", mat.unidade);
+			printf (" Unidade: %s\n", mat.unidade);
+			printf (" Preco de 1%s: %f\n", mat.unidade, mat.preco);
 			existe = 1;
 		}
 	}
@@ -582,12 +578,16 @@ void CadastrarMateriaisDisponiveis (FORNECEDOR fornecedor) {
 			break;
 		}
 	}while(unidade==4);
+	
+	printf ("Preco de 1%s do material: R$", mat.unidade);
+	scanf ("%f", &mat.preco);
+	 
 	fwrite(&mat, sizeof(MATERIALFORNECEDOR), 1, Material);
 	
 	fclose (Material);
 }
 
-NOMES *novo_nome(NOMES *nomes,char nome[TAMANHO_NOME],int p,int codFornecedor, int codEmpresa, int codMaterial){
+NOMES *novo_nome(NOMES *nomes,char nome[TAMANHO_NOME],int p,int codFornecedor, int codEmpresa, int codMaterial, float preco){
 	NOMES *novo = (NOMES*)malloc(sizeof(NOMES));
 	if (!novo == NULL) {
 		NOMES *ax;
@@ -609,6 +609,7 @@ NOMES *novo_nome(NOMES *nomes,char nome[TAMANHO_NOME],int p,int codFornecedor, i
 			novo->JaFoi = 1;		
 			novo->codEmpresa = codEmpresa;
 			novo->codMaterial = codMaterial;
+			novo->preco = preco;
 		
 	}
 	return nomes;
@@ -688,10 +689,10 @@ void Pedido(EMPRESA empresa){
 							if (matProd.codMaterial == mat.codigo) {
 								if (stricmp (MatFor.nomeMaterial, mat.nomeMaterial) == 0){
 									if(PrimeiroMaterial==0){
-										nomes = novo_nome(nomes,mat.nomeMaterial,0,MatFor.codigoFornecedor, empresa.codigo, mat.codigo);
+										nomes = novo_nome(nomes,mat.nomeMaterial,0,MatFor.codigoFornecedor, empresa.codigo, mat.codigo, MatFor.preco);
 										PrimeiroMaterial=1;
 									}else{
-										nomes = novo_nome(nomes,mat.nomeMaterial,1,MatFor.codigoFornecedor, empresa.codigo, mat.codigo);										
+										nomes = novo_nome(nomes,mat.nomeMaterial,1,MatFor.codigoFornecedor, empresa.codigo, mat.codigo, MatFor.preco);										
 									}
 								}								
 							}
@@ -740,7 +741,8 @@ void Pedido(EMPRESA empresa){
 							printf(" \n\n *%s:", t->nome);
 							while (fread (&fornecedor, sizeof (FORNECEDOR), 1, Fornecedor)){
 								if (t->codFornecedor == fornecedor.codigo || f->codFornecedor == fornecedor.codigo) {
-									printf ("\n\t- %s", fornecedor.nome);
+									printf ("\nt->preco; %.2f; f->preco: %.2f", t->preco, f->preco);
+									printf ("\n\t- %s\t Custo: R$%f", fornecedor.nome, t->preco);
 									t->JaFoi = 0;
 									f->JaFoi = 0;
 								}

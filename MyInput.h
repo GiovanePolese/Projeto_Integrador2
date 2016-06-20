@@ -53,6 +53,7 @@ typedef struct{
 	char nomeMaterial[TAMANHO_NOME];
 	int codigoFornecedor;
 	char unidade[TAMANHO_UNIDADE];
+	float preco;
 }MATERIALFORNECEDOR;
 
 typedef struct{
@@ -77,6 +78,7 @@ typedef struct nomes{
 	int codEmpresa;
 	int codMaterial;
 	int QuantidadeDoMaterial;
+	float preco;
 	int JaFoi = 1;
 	struct nomes *p;
 }NOMES;
