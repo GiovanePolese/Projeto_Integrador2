@@ -95,6 +95,13 @@ void ListarMateriais(FORNECEDOR fornecedor);
 void FazerPedido (int CodigoEmpresa, int CodigoFornecedor, int CodigoMaterial, int CodigoProduto, int quantidade, int codigo);
 void ListarPedidoEmpresa(EMPRESA empresa);
 void ListarPedidoFornecedor(FORNECEDOR fornecedor);
+void JUST();
+void In ();
+void TIME();
+void EfeitoJUST1(int T);
+void EfeitoTIME1(int T);
+void EfeitoJUST2(int T);
+void EfeitoTIME2(int T);
 
 // Needs the argument MaxSize, which is the maximum size of the password
 // Returns the string password
@@ -221,4 +228,332 @@ void menu(int id){
 		
 		break;
 	}
+}
+
+void Logo() {
+	int a=0;
+	int T=200;
+	
+	Sleep(2000);
+	
+	while(a<7){
+		EfeitoJUST1(T);
+		EfeitoTIME1(T);
+		system("cls");
+		EfeitoTIME2(T);
+		EfeitoJUST2(T);
+	T-=30;
+	a++;
+	}
+		system("cls");
+		JUST();
+		In();
+		TIME();
+		Sleep(2000);
+}
+
+void JUST(){
+	
+	printf("\n\n");
+	printf("\n\t\t                    ***  ***        ***  **************  *************  ");
+	printf("\n\t\t                    ***  ***        ***  **************  *************  ");
+	printf("\n\t\t                    ***  ***        ***  ***                  ***       ");
+	printf("\n\t\t                    ***  ***        ***  ***                  ***       ");
+	printf("\n\t\t                    ***  ***        ***  ***                  ***       ");
+	printf("\n\t\t                    ***  ***        ***  **************       ***       ");
+	printf("\n\t\t                    ***  ***        ***  **************       ***       ");
+	printf("\n\t\t                    ***  ***        ***             ***       ***       ");
+	printf("\n\t\t          *         ***  ***        ***             ***       ***       ");
+	printf("\n\t\t          **        ***  ***        ***             ***       ***       ");
+	printf("\n\t\t          ***       ***  ***        ***             ***       ***       ");
+	printf("\n\t\t          *************  **************  **************       ***       ");
+	printf("\n\t\t          *************  **************  **************       ***       ");
+}
+
+void In () {
+	printf("\n");
+	printf("\n\t\t                                 **  ***   **   ");
+	printf("\n\t\t                                 **  ** *  **   ");
+	printf("\n\t\t                                 **  **  * **   ");
+	printf("\n\t\t                                 **  **   ***   ");
+}
+
+void TIME(){
+    printf("\n");
+	printf("\n\t\t          *************   ***  *****             *****  *************   ");
+	printf("\n\t\t          *************   ***  ******           ******  *************   ");
+	printf("\n\t\t               ***        ***  ***  **         **  ***  ***             ");
+	printf("\n\t\t               ***        ***  ***   **       **   ***  ***             ");
+	printf("\n\t\t               ***        ***  ***    **     **    ***  ********        ");
+	printf("\n\t\t               ***        ***  ***     **   **     ***  ********        ");
+	printf("\n\t\t               ***        ***  ***      ** **      ***  ***             ");
+	printf("\n\t\t               ***        ***  ***       ***       ***  ***             ");
+	printf("\n\t\t               ***        ***  ***                 ***  ***             ");
+	printf("\n\t\t               ***        ***  ***                 ***  *************   ");
+	printf("\n\t\t               ***        ***  ***                 ***  *************   ");	
+}
+
+void EfeitoTIME1(int T){
+	system("cls");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	printf("\n\t\t                                                        *************   ");
+	printf("\n\t\t                                                        *************   ");
+	printf("\n\t\t                                                        ***             ");
+	printf("\n\t\t                                                        ***             ");
+	printf("\n\t\t                                                        ********        ");
+	printf("\n\t\t                                                        ********        ");
+	printf("\n\t\t                                                        ***             ");
+	printf("\n\t\t                                                        ***             ");
+	printf("\n\t\t                                                        ***             ");
+	printf("\n\t\t                                                        *************   ");
+	printf("\n\t\t                                                        *************   ");
+	Sleep(T);
+	
+	system("cls");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	printf("\n\t\t                               *****             ***** ");
+	printf("\n\t\t                               ******           ****** ");
+	printf("\n\t\t                               ***  **         **  *** ");
+	printf("\n\t\t                               ***   **       **   *** ");
+	printf("\n\t\t                               ***    **     **    *** ");
+	printf("\n\t\t                               ***     **   **     *** ");
+	printf("\n\t\t                               ***      ** **      *** ");
+	printf("\n\t\t                               ***       ***       *** ");
+	printf("\n\t\t                               ***                 *** ");
+	printf("\n\t\t                               ***                 *** ");
+	printf("\n\t\t                               ***                 *** ");
+	Sleep(T);
+	
+	system("cls");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	Sleep(T);
+	
+	system("cls");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	printf("\n\t\t          ************* ");
+	printf("\n\t\t          ************* ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	Sleep(T);
+}
+
+void EfeitoTIME2(int T){
+	system("cls");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	printf("\n\t\t          ************* ");
+	printf("\n\t\t          ************* ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	printf("\n\t\t               ***      ");
+	Sleep(T);
+	
+	system("cls");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	printf("\n\t\t                          ***  ");
+	Sleep(T);
+	
+	system("cls");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	printf("\n\t\t                               *****             ***** ");
+	printf("\n\t\t                               ******           ****** ");
+	printf("\n\t\t                               ***  **         **  *** ");
+	printf("\n\t\t                               ***   **       **   *** ");
+	printf("\n\t\t                               ***    **     **    *** ");
+	printf("\n\t\t                               ***     **   **     *** ");
+	printf("\n\t\t                               ***      ** **      *** ");
+	printf("\n\t\t                               ***       ***       *** ");
+	printf("\n\t\t                               ***                 *** ");
+	printf("\n\t\t                               ***                 *** ");
+	printf("\n\t\t                               ***                 *** ");
+	Sleep(T);
+	
+	system("cls");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	printf("\n\t\t                                                        *************   ");
+	printf("\n\t\t                                                        *************   ");
+	printf("\n\t\t                                                        ***             ");
+	printf("\n\t\t                                                        ***             ");
+	printf("\n\t\t                                                        ********        ");
+	printf("\n\t\t                                                        ********        ");
+	printf("\n\t\t                                                        ***             ");
+	printf("\n\t\t                                                        ***             ");
+	printf("\n\t\t                                                        ***             ");
+	printf("\n\t\t                                                        *************   ");
+	printf("\n\t\t                                                        *************   ");
+	Sleep(T);
+}
+
+void EfeitoJUST1(int T){
+	system("cls");
+	printf("\n\n");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t          *         ***  ");
+	printf("\n\t\t          **        ***  ");
+	printf("\n\t\t          ***       ***  ");
+	printf("\n\t\t          *************  ");
+	printf("\n\t\t          *************  ");
+	Sleep(T);
+
+	system("cls");
+	printf("\n\n");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ************** ");
+	printf("\n\t\t                         ************** ");
+	Sleep(T);
+
+	system("cls");
+	printf("\n\n");
+	printf("\n\t\t                                         ************** ");
+	printf("\n\t\t                                         ************** ");
+	printf("\n\t\t                                         ***            ");
+	printf("\n\t\t                                         ***            ");
+	printf("\n\t\t                                         ***            ");
+	printf("\n\t\t                                         ************** ");
+	printf("\n\t\t                                         ************** ");
+	printf("\n\t\t                                                    *** ");
+	printf("\n\t\t                                                    *** ");
+	printf("\n\t\t                                                    *** ");
+	printf("\n\t\t                                                    *** ");
+	printf("\n\t\t                                        *************** ");
+	printf("\n\t\t                                        *************** ");
+	Sleep(T);
+
+	system("cls");
+	printf("\n\n");
+	printf("\n\t\t                                                         *************  ");
+	printf("\n\t\t                                                         *************  ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	Sleep(T);
+}
+
+void EfeitoJUST2(int T){
+	system("cls");
+	printf("\n\n");
+	printf("\n\t\t                                                         *************  ");
+	printf("\n\t\t                                                         *************  ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	printf("\n\t\t                                                              ***       ");
+	Sleep(T);
+
+	system("cls");
+	printf("\n\n");
+	printf("\n\t\t                                         ************** ");
+	printf("\n\t\t                                         ************** ");
+	printf("\n\t\t                                         ***            ");
+	printf("\n\t\t                                         ***            ");
+	printf("\n\t\t                                         ***            ");
+	printf("\n\t\t                                         ************** ");
+	printf("\n\t\t                                         ************** ");
+	printf("\n\t\t                                                    *** ");
+	printf("\n\t\t                                                    *** ");
+	printf("\n\t\t                                                    *** ");
+	printf("\n\t\t                                                    *** ");
+	printf("\n\t\t                                        *************** ");
+	printf("\n\t\t                                        *************** ");
+	Sleep(T);
+
+
+	system("cls");
+	printf("\n\n");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ***        *** ");
+	printf("\n\t\t                         ************** ");
+	printf("\n\t\t                         ************** ");
+	Sleep(T);
+
+	system("cls");
+	printf("\n\n");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t                    ***  ");
+	printf("\n\t\t          *         ***  ");
+	printf("\n\t\t          **        ***  ");
+	printf("\n\t\t          ***       ***  ");
+	printf("\n\t\t          *************  ");
+	printf("\n\t\t          *************  ");
+	Sleep(T);
 }
