@@ -7,6 +7,7 @@
 #include "MyInput.h" //Biblioteca exclusiva -> Funções para ler strings e senhas
 
 int main() {
+//	setlocale(LC_ALL, "UTF-8");
 	EMPRESA empresa;
 	FORNECEDOR fornecedor;
 	menu(1,empresa,fornecedor);
@@ -26,7 +27,7 @@ void TelaDeLogin() {
 	                                                // Não havendo, então, a possibilidade de ler uma quantidade de caracteres maior
 													// que o tamanho do vetor. 
 													// Obs.: O parâmetro é o TAMANHO-1, pois no último índice haverá um '\0', indicando que a string acabou
-	printf ("Senha: ");
+	printf (" Senha: ");
 	strcpy (senha, GetPassword(TAMANHO_SENHA-1)); // Função para ler senha; Funciona igual ao scanf, porém imprime "*" no lugar do caractere
 	                                              // Obs.: O parâmetro é o TAMANHO-1, pois segue a mesma lógica citada na Obs. acima
 	
@@ -308,6 +309,7 @@ void CadastrarMateriais(int CodigoProduto){
 	
 	fclose(Material);
 	fclose(MaterialProd);
+
 }
 
 void CadastroProdutos (EMPRESA empresa) {
@@ -354,6 +356,7 @@ void CadastroProdutos (EMPRESA empresa) {
 		printf("\nDeseja adicionar outro material ? (S - sim ou N - nao): \n\n");
 		opcao = getch();
 	}while(opcao=='s'||opcao=='S');
+
 }
 
 void ListarProdutos(EMPRESA empresa) {
@@ -401,6 +404,7 @@ void ListarProdutos(EMPRESA empresa) {
 	fclose (Empresa);
 	fclose (Material);
 	fclose (MaterialProd);
+	menu(2,empresa,fornecedor);
 }
 
 void ListarMateriais(FORNECEDOR fornecedor) {

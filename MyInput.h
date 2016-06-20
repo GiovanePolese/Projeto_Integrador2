@@ -1,10 +1,10 @@
 //13 == ASCII code for "ENTER"
 //32 == ASCII code for "SPACE"
 //8 == ASCII code for "BACKSPACE"
-
 #include <stdio.h>
 #include <conio.h>
 #include <Windows.h>
+#include <locale.h>
 
 #define TAMANHO_SENHA 9
 #define TAMANHO_USUARIO 25
@@ -68,8 +68,6 @@ typedef struct nomes{
 	int cod;
 	struct nomes *p;
 }NOMES;
-
-
 
 void TelaDeLogin();
 void TelaCadastroLogin();
@@ -152,53 +150,101 @@ char *GetString (int MaxSize) {
 }
 
 void menu(int id,EMPRESA empresa, FORNECEDOR fornecedor){
-	COORD cr;
-	char ch;
-		 
+	system("cls");
+	COORD cr,cr2;
+	char ch,pm;
+	char *locale;
+	setlocale(LC_ALL, "");
+	FILE *fp;
+	int op =1;
 	switch(id){
 		
 		case 1:
-			cr.X = 20;
-			cr.Y = 6;
-			system ("cls");	
-			printf ("***********************************************************************************************************************\n");
-			printf ("*********************************************** MENU PRINCIPAL ********************************************************\n");
-			printf ("***********************************************************************************************************************\n\n");
-			printf ("------------------------ SELECIONE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA SAIR ----------------------------\n");
-			printf (" \n");
-			printf ("**                  %c                         Fazer login                                                            **\n",CURSOR);
-			printf ("**                                      Cadastrar novo usuario                                                       **\n");
+			cr.X = 17;
+			cr.Y = 8;
+			cr2.X = 50;
+			cr2.Y = 8;
+			fp = fopen("menu.txt", "r");
+			while ((pm = fgetc(fp)) != EOF) {
+				printf("%c", pm);
+			}
+			fclose(fp);
 			do{
 				if(kbhit()){
 					ch = getch();
 					fflush(stdin);
 					switch(ch){
-						case MOVE_UP:
-							if(cr.Y>6){
-								cursor(cr,' ');
-								cr.Y--;
-								cursor(cr,CURSOR);
+						case MOVE_DOWN:
+							if(op==1){
+								// apaga os |
+								cr.Y = 8;
+								cursor(cr, ' ');
+								cr.Y = 9;
+								cursor(cr, ' ');
+								cr.Y = 10;
+								cursor(cr, ' ');
+								cr2.Y = 8;
+								cursor(cr2, ' ');
+								cr2.Y = 9;
+								cursor(cr2, ' ');
+								cr2.Y = 10;
+								cursor(cr2, ' ');
+								// escreve os |
+								cr.Y = 11;
+								cursor(cr, '|');
+								cr.Y = 12;
+								cursor(cr, '|');
+								cr.Y = 13;
+								cursor(cr, '|');
+								cr2.Y = 11;
+								cursor(cr2, '|');
+								cr2.Y = 12;
+								cursor(cr2, '|');
+								cr2.Y = 13;
+								cursor(cr2, '|');
 							}
+							op = 2;
 						break;
 						
-						case MOVE_DOWN:
-							if(cr.Y<7){
-								cursor(cr,' ');
-								cr.Y++;
-								cursor(cr,CURSOR);
+						case MOVE_UP:
+							if(op==2){
+								//apaga os |
+								cr.Y = 11;
+								cursor(cr, ' ');
+								cr.Y = 12;
+								cursor(cr, ' ');
+								cr.Y = 13;
+								cursor(cr, ' ');
+								cr2.Y = 11;
+								cursor(cr2, ' ');
+								cr2.Y = 12;
+								cursor(cr2, ' ');
+								cr2.Y = 13;
+								cursor(cr2, ' ');
+								//escreve os |
+								cr.Y = 8;
+								cursor(cr, '|');
+								cr.Y = 9;
+								cursor(cr, '|');
+								cr.Y = 10;
+								cursor(cr, '|');
+								cr2.Y = 8;
+								cursor(cr2, '|');
+								cr2.Y = 9;
+								cursor(cr2, '|');
+								cr2.Y = 10;
+								cursor(cr2, '|');
 							}
+							op=1;
 						break;
 						case ENTER:
-							if(cr.Y==6){
-								cr.X = 0;
-								cr.Y = 9;
-								cursor(cr,' ');
+							cr.X = 0;
+							cr.Y = 20;
+							cursor(cr,' ');
+							if(op==1){
 								TelaDeLogin();
-							}else if(cr.Y == 7){
+							}else if(op==2){
 								TelaCadastroLogin();
-								cr.X = 0;
-								cr.Y = 9;
-								cursor(cr,' ');
 							}
 						break;
 					}
@@ -206,46 +252,238 @@ void menu(int id,EMPRESA empresa, FORNECEDOR fornecedor){
 			}while(ch!=ESC);
 		break;
 		case 2:
-			cr.X = 20;
+			cr.X = 18;
 			cr.Y = 6;
-
-			printf ("***********************************************************************************************************************\n");
-			printf ("************************************************ MENU EMPRESA *********************************************************\n");
-			printf ("*************** DIGITE O NUMERO DA OPCAO DESEJADA. PRESSIONE \"ESC\" PARA VOLTAR AO MENU PRINCIPAL **********************\n");
-			printf ("***********************************************************************************************************************\n");
-			printf ("**                                          Cadastrar Produtos                                                       **\n");
-			printf ("**                                             Fazer pedido                                                          **\n");
-			printf ("**                                            Listar produtos                                                        **\n");
-			printf ("**                                             Listar pedidos                                                        **\n");
-			printf ("***********************************************************************************************************************\n");
-
+			cr2.X = 49;
+			cr2.Y = 6;
+			fp = fopen("menu2.txt", "r");
+			while ((pm = fgetc(fp)) != EOF) {
+				printf("%c", pm);
+			}
+			fclose(fp);
 			do{
 				if(kbhit()){
 					ch = getch();
 					fflush(stdin);
 					switch(ch){
-						case MOVE_UP:
-							if(cr.Y>6){
-								cursor(cr,' ');
-								cr.Y--;
-								cursor(cr,CURSOR);
+						case MOVE_DOWN:
+							if(op<=3){
+								switch(op){
+									case 1:
+										cr.Y =8;
+										cursor(cr, ' ');
+										cr.Y =9;
+										cursor(cr, ' ');
+										cr.Y = 10;
+										cursor(cr, ' ');
+										cr2.Y = 8;
+										cursor(cr2, ' ');
+										cr2.Y = 9;
+										cursor(cr2, ' ');
+										cr2.Y = 10;
+										cursor(cr2, ' ');
+										// escreve os |
+										cr.Y = 11;
+										cursor(cr, '|');
+										cr.Y = 12;
+										cursor(cr, '|');
+										cr.Y = 13;
+										cursor(cr, '|');
+										cr2.Y = 11;
+										cursor(cr2, '|');
+										cr2.Y = 12;
+										cursor(cr2, '|');
+										cr2.Y = 13;
+										cursor(cr2, '|');
+										op ++;
+									break;
+									case 2:
+										cr.Y =11;
+										cursor(cr, ' ');
+										cr.Y =12;
+										cursor(cr, ' ');
+										cr.Y = 13;
+										cursor(cr, ' ');
+										cr2.Y = 11;
+										cursor(cr2, ' ');
+										cr2.Y = 12;
+										cursor(cr2, ' ');
+										cr2.Y = 13;
+										cursor(cr2, ' ');
+										// escreve os |
+										cr.Y = 14;
+										cursor(cr, '|');
+										cr.Y = 15;
+										cursor(cr, '|');
+										cr.Y = 16;
+										cursor(cr, '|');
+										cr2.Y = 14;
+										cursor(cr2, '|');
+										cr2.Y = 15;
+										cursor(cr2, '|');
+										cr2.Y = 16;
+										cursor(cr2, '|');
+										op++;
+									break;
+									case 3:
+										cr.Y =14;
+										cursor(cr, ' ');
+										cr.Y =15;
+										cursor(cr, ' ');
+										cr.Y = 16;
+										cursor(cr, ' ');
+										cr2.Y = 14;
+										cursor(cr2, ' ');
+										cr2.Y = 15;
+										cursor(cr2, ' ');
+										cr2.Y = 16;
+										cursor(cr2, ' ');
+										// escreve os |
+										cr.Y = 17;
+										cursor(cr, '|');
+										cr.Y = 18;
+										cursor(cr, '|');
+										cr.Y = 19;
+										cursor(cr, '|');
+										cr2.Y = 17;
+										cursor(cr2, '|');
+										cr2.Y = 18;
+										cursor(cr2, '|');
+										cr2.Y = 19;
+										cursor(cr2, '|');
+										op++;
+									break;
+								}								
 							}
 						break;
 						
-						case MOVE_DOWN:
-							if(cr.Y<8){
-								cursor(cr,' ');
-								cr.Y++;
-								cursor(cr,CURSOR);
+						case MOVE_UP:
+							if(op>=1){
+								switch(op){
+									case 4:
+										cr.Y =14;
+										cursor(cr, '|');
+										cr.Y =15;
+										cursor(cr, '|');
+										cr.Y = 16;
+										cursor(cr, '|');
+										cr2.Y = 14;
+										cursor(cr2, '|');
+										cr2.Y = 15;
+										cursor(cr2, '|');
+										cr2.Y = 16;
+										cursor(cr2, '|');
+										// escreve os |
+										cr.Y = 17;
+										cursor(cr, ' ');
+										cr.Y = 18;
+										cursor(cr, ' ');
+										cr.Y = 19;
+										cursor(cr, ' ');
+										cr2.Y = 17;
+										cursor(cr2, ' ');
+										cr2.Y = 18;
+										cursor(cr2, ' ');
+										cr2.Y = 19;
+										cursor(cr2, ' ');
+										op--;
+									break;
+									case 3:
+										cr.Y =14;
+										cursor(cr, '|');
+										cr.Y =15;
+										cursor(cr, '|');
+										cr.Y = 16;
+										cursor(cr, '|');
+										cr2.Y = 14;
+										cursor(cr2, '|');
+										cr2.Y = 15;
+										cursor(cr2, '|');
+										cr2.Y = 16;
+										cursor(cr2, '|');
+										// escreve os |
+										cr.Y = 17;
+										cursor(cr, ' ');
+										cr.Y = 18;
+										cursor(cr, ' ');
+										cr.Y = 19;
+										cursor(cr, ' ');
+										cr2.Y = 17;
+										cursor(cr2, ' ');
+										cr2.Y = 18;
+										cursor(cr2, ' ');
+										cr2.Y = 19;
+										cursor(cr2, ' ');
+										op--;
+									break;
+									case 2:
+										cr.Y =11;
+										cursor(cr, '|');
+										cr.Y =12;
+										cursor(cr, '|');
+										cr.Y = 13;
+										cursor(cr, '|');
+										cr2.Y = 11;
+										cursor(cr2, '|');
+										cr2.Y = 12;
+										cursor(cr2, '|');
+										cr2.Y = 13;
+										cursor(cr2, '|');
+										// escreve os |
+										cr.Y = 14;
+										cursor(cr, ' ');
+										cr.Y = 15;
+										cursor(cr, ' ');
+										cr.Y = 16;
+										cursor(cr, ' ');
+										cr2.Y = 14;
+										cursor(cr2, ' ');
+										cr2.Y = 15;
+										cursor(cr2, ' ');
+										cr2.Y = 16;
+										cursor(cr2, ' ');
+										op--;
+										printf("%d",op);
+									break;
+									case 1:
+										cr.Y =8;
+										cursor(cr, '|');
+										cr.Y =9;
+										cursor(cr, '|');
+										cr.Y = 10;
+										cursor(cr, '|');
+										cr2.Y = 8;
+										cursor(cr2, '|');
+										cr2.Y = 9;
+										cursor(cr2, '|');
+										cr2.Y = 10;
+										cursor(cr2, '|');
+										// escreve os |
+										cr.Y = 11;
+										cursor(cr, ' ');
+										cr.Y = 12;
+										cursor(cr, ' ');
+										cr.Y = 13;
+										cursor(cr, ' ');
+										cr2.Y = 11;
+										cursor(cr2, ' ');
+										cr2.Y = 12;
+										cursor(cr2, ' ');
+										cr2.Y = 13;
+										cursor(cr2, ' ');
+
+								}
 							}
 						break;
 						case ENTER:
-							if(cr.Y==5){
+							if(cr.Y == 6){
 								CadastroProdutos(empresa);
-							}else if(cr.Y == 6){
+							}else if(cr.Y == 13){
 								Pedido(empresa);
-							}else if(cr.Y == 7){
+							}else if(cr.Y == 16){
 								ListarProdutos(empresa);
+							}else if(cr.Y == 19){
+								
 							}
 						break;
 					}
