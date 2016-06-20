@@ -647,6 +647,7 @@ void Pedido(EMPRESA empresa){
 	int quantidadePedido, CodigoFornecedor, ExisteEsse, maior = 1;
 	char produto[TAMANHO_NOME], escolha[TAMANHO_NOME];
 	int quantidade, existe = 0, opcao, codigo, Tem = 0,PrimeiroMaterial=0,ContaMateriais = 0,ContaMateriaisExistentes = 0, escolhaCodigo;
+	int i = 0;
 	
 	printf("Digite o produto desejado : ");
 	strcpy(produto,GetString(TAMANHO_NOME-1));
@@ -741,16 +742,20 @@ void Pedido(EMPRESA empresa){
 				for(t = nomes; t!=NULL;t = t->p){
 					
 					while (fread (&fornecedor, sizeof (FORNECEDOR), 1, Fornecedor)){
-						if(t->codFornecedor == fornecedor.codigo)
+						while (fread (&mat, sizeof (MATERIAL), 1, Material)) {
+							if (t->JaFoi==1 && mat.codigo == t->codMaterial && t->codFornecedor == fornecedor.codigo) {
+								t->JaFoi=0;
+								FazerPedido(t->codEmpresa, t->codFornecedor, t->codMaterial, codigo, quantidadePedido, maior);
+							}
+						}
+						fseek(Material, 0, SEEK_SET);
+						if (i == 0) {	
 							printf ("%s :.", fornecedor.nome);
-						if(t->JaFoi==1 && t->codFornecedor == fornecedor.codigo){
-							// ("\n\t- %s\t Custo: R$%f", fornecedor.nome, t->preco);
-						//	MostraMateriais(nomes,t->codFornecedor,t->nome,fornecedor.nome);
-							FazerPedido(t->codEmpresa, t->codFornecedor, t->codMaterial, codigo, quantidadePedido, maior);
-							t->JaFoi=0;
+							i++;
 						}
 					}
-					printf ("\n\n\t *%s:", t->nome);
+					fseek(Fornecedor, 0, SEEK_SET);
+					printf ("\n\n\t *%s", t->nome);
 				}
 			
 			}else if(Tem == 2){
@@ -758,6 +763,7 @@ void Pedido(EMPRESA empresa){
 				for (t = nomes; t != NULL; t = t->p){
 					for (f = nomes; f != NULL; f = f->p){
 						if(stricmp(t->nome,f->nome)==0 && t->codFornecedor != f->codFornecedor && t->JaFoi == 1){
+							printf(" \n\n *%s:", t->nome);
 							while (fread (&fornecedor, sizeof (FORNECEDOR), 1, Fornecedor)){
 									MostraMateriais(nomes,fornecedor.codigo,t->nome,fornecedor.nome);
 							}
@@ -783,9 +789,13 @@ void Pedido(EMPRESA empresa){
 							FazerPedido(f->codEmpresa, escolhaCodigo, f->codMaterial, codigo, quantidadePedido, maior);
 							
 						} else if (t->p == NULL && (stricmp (t->nome, f->nome) != 0) && f->JaFoi == 1) {
-							printf ("\n\n *%s:", f->nome);
-							printf ("\n\t- %s", fornecedor.nome);
-							FazerPedido(f->codEmpresa, fornecedor.codigo, f->codMaterial, codigo, quantidadePedido, maior);
+							while (fread (&fornecedor, sizeof (FORNECEDOR), 1, Fornecedor)) {
+								if (fornecedor.codigo == f->codFornecedor) {
+									printf ("\n\n *%s:", f->nome);
+									printf ("\n\t- %s", fornecedor.nome);
+									FazerPedido(f->codEmpresa, fornecedor.codigo, f->codMaterial, codigo, quantidadePedido, maior);
+								}
+							}
 						}
 					}
 				}
